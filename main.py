@@ -2,12 +2,15 @@ import pygame
 from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 # see grids
-from scripts.utils import draw_grids
+from scripts.utils import draw_grids, make_object
 
 pygame.init()
 
 
-
+def draw(display, obj):
+    draw_grids(display)
+    
+    display.blit(obj, (200, 300))
 
 class Game:
     def __init__(self):
@@ -16,13 +19,14 @@ class Game:
 
     def loop(self):
         run = True
+        obj = make_object()
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                     break
 
-            draw_grids(self.screen)
+            draw(self.screen, obj)
             pygame.display.update()
 
         pygame.quit()
