@@ -32,10 +32,20 @@ def place_object(display, obj, permulation):
     y = CARD_HEIGHT + col * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_height() // 2)
     display.blit(obj, (x, y))
 
-def make_object():
+def make_object_image(name='plant'):
+    if name == 'plant':
+        color = (0, 255, 255)
+    elif name == 'zombie':
+        color = (255, 0, 0)
     obj_width = obj_height = 64
     surface = pygame.Surface((obj_width, obj_height), pygame.SRCALPHA, 32)
     rect = pygame.Rect(0, 0, obj_width, obj_height)
-    pygame.draw.rect(surface, (255, 0, 0), rect)
+    pygame.draw.rect(surface, color, rect)
     return surface
 
+# index begin from 1..N
+def get_pos_from_permutation(obj, permutation):
+    row, col = permutation
+    x = MOWER_SPACE + (col - 1) * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_width() // 2)
+    y = CARD_HEIGHT + (row - 1) * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_height() // 2)
+    return x, y

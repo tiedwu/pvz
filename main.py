@@ -1,32 +1,46 @@
 import pygame
 from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from scripts.spawner import Spawner
 
 # see grids
-from scripts.utils import draw_grids, make_object
+from scripts.utils import draw_grids
 
 pygame.init()
-
-
-def draw(display, obj):
-    draw_grids(display)
-    
-    display.blit(obj, (200, 300))
 
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Plants VS Zombies')
+        self.zombies = Spawner('zombie')
+        self.plants = Spawner('plant')
+
+    def update(self):
+        self.zombies.group.update()
+
+    def draw(self):
+        draw_grids(self.screen)
+
+        self.zombies.group.draw(self.screen)
+        self.plants.group.draw(self.screen)
 
     def loop(self):
         run = True
-        obj = make_object()
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                     break
 
-            draw(self.screen, obj)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_z:
+                        self.zombies.generate()
+
+                    if event.key == pygame.K_p:
+                        self.plants.generate()
+
+            self.update()
+            self.draw()
+
             pygame.display.update()
 
         pygame.quit()
