@@ -19,3 +19,4 @@ ZOMBIE_SPAWN_COL = 17
 ZOMBIES_APPEARS = {'map0': {'zombie_1': 0.7, 'zombie_2': 0.3}}
 
 
+

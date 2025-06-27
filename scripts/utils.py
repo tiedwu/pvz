@@ -2,6 +2,9 @@
 import pygame
 from scripts.constants import *
 
+pygame.font.init()
+OBJECT_FONT = pygame.font.SysFont('comicsans', 30)
+
 def draw_grids(display):
     display.fill(GRASS_COLOR)
 
@@ -32,7 +35,7 @@ def place_object(display, obj, permulation):
     y = CARD_HEIGHT + col * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_height() // 2)
     display.blit(obj, (x, y))
 
-def make_object_image(name='plant'):
+def make_object_image(name='plant', obj_type=1):
     if name == 'plant':
         color = (0, 255, 255)
     elif name == 'zombie':
@@ -41,6 +44,9 @@ def make_object_image(name='plant'):
     surface = pygame.Surface((obj_width, obj_height), pygame.SRCALPHA, 32)
     rect = pygame.Rect(0, 0, obj_width, obj_height)
     pygame.draw.rect(surface, color, rect)
+    text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
+    surface.blit(text, (surface.get_width() // 2 - text.get_width() // 2, \
+            surface.get_height() // 2 - text.get_height() // 2))
     return surface
 
 # index begin from 1..N
