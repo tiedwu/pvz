@@ -2,7 +2,7 @@ import random
 
 from scripts.entities import Entity
 from scripts.constants import ZOMBIES_APPEARS
-from scripts.utils import make_object_image
+from scripts.utils import make_object_images
 
 class ZombieGenerator:
     ZOMBIES_APPEARS = ZOMBIES_APPEARS
@@ -25,24 +25,31 @@ class ZombieGenerator:
         return zombie
 
 class Zombie(Entity):
-    def __init__(self, permutation, images={'idle': [make_object_image('zombie')]}):
+    def __init__(self, permutation, images=make_object_images('zombie')):
         super().__init__(None, permutation, images)
 
     def get_velocity(self):
         return self.velocity
 
 class Zombie_1(Zombie):
-    IMAGES = {'idle': [make_object_image('zombie', 1)]}
-    VEL = [-0.1, 0]
+    #IMAGES = {'idle': make_walk_images('zombie', 1), 'walk': make_walk_images('zombie', 1)}
+    IMAGES = make_object_images('zombie', 1)
+    VEL = [-1, 0]
+    ANIMATION_DURATION = 1 * 60
     def __init__(self, permutation):
         super().__init__(permutation, images=self.IMAGES)
         self.velocity = self.VEL
+        self.animation_duration = self.ANIMATION_DURATION
 
 class Zombie_2(Zombie):
-    IMAGES = {'idle': [make_object_image('zombie', 2)]}
-    VEL = [-0.2, 0]
+    #IMAGES = {'idle': [make_object_image('zombie', 2)]}
+    #IMAGES = {'idle': make_walk_images('zombie', 2), 'walk': make_walk_images('zombie', 2)}
+    IMAGES = make_object_images('zombie', 2)
+    VEL = [-2, 0]
+    ANIMATION_DURATION = 1 * 60
     def __init__(self, permutation):
         super().__init__(permutation, images=self.IMAGES)
         self.velocity = self.VEL
+        self.animation_duration = self.ANIMATION_DURATION
 
 

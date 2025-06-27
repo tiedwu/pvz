@@ -1,5 +1,5 @@
 import pygame
-from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 from scripts.spawner import Spawner
 
 # see grids
@@ -24,8 +24,10 @@ class Game:
         self.plants.group.draw(self.screen)
 
     def loop(self):
+        clock = pygame.time.Clock()
         run = True
         while run:
+            clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False

@@ -41,12 +41,71 @@ def make_object_image(name='plant', obj_type=1):
     elif name == 'zombie':
         color = (255, 0, 0)
     obj_width = obj_height = 64
-    surface = pygame.Surface((obj_width, obj_height), pygame.SRCALPHA, 32)
-    rect = pygame.Rect(0, 0, obj_width, obj_height)
-    pygame.draw.rect(surface, color, rect)
+    surface = make_rectangle(color, obj_width, obj_height)
     text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
     surface.blit(text, (surface.get_width() // 2 - text.get_width() // 2, \
             surface.get_height() // 2 - text.get_height() // 2))
+    return surface
+
+def make_idle_image(name='plant', obj_type=1):
+    if name == 'plant':
+        color = (0, 255, 255)
+    elif name == 'zombie':
+        color = (255, 0, 0)
+    obj_width = obj_height = 64
+    surface = make_rectangle(color, obj_width, obj_height)
+    text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
+    surface.blit(text, (surface.get_width() // 2 - text.get_width() // 2, \
+            surface.get_height() // 2 - text.get_height() // 2))
+    return surface
+
+def make_walk_images(name='plant', obj_type=1):
+    images = []
+    if name == 'plant':
+        color = (0, 255, 255)
+    elif name == 'zombie':
+        color = (255, 0, 0)
+    obj_width = obj_height = 64
+
+    for i in range(4):
+        surface = make_rectangle(color, obj_width, obj_height).copy()
+        text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
+        surface.blit(text, (surface.get_width() // 2 - text.get_width() // 2, \
+            surface.get_height() // 2 - text.get_height() // 2))
+    #pygame.draw.line(surface, (0, 0, 0), \
+    #        (0, surface.get_height() // 2), (surface.get_width() // 2, 0), 5)
+        images.append(make_walk_animation(surface, i))
+    
+    return images
+
+def make_walk_animation(surface, index):
+    if index == 0:
+        pygame.draw.line(surface, (0, 0, 0), \
+            (0, surface.get_height() // 2), (surface.get_width() // 2, 0), 5)
+    elif index == 1:
+        pygame.draw.line(surface, (0, 0, 0), \
+            (surface.get_width() // 2, 0), (surface.get_width(), surface.get_height() // 2), 5)  
+    elif index == 2:
+        pygame.draw.line(surface, (0, 0, 0), \
+            (surface.get_width(), surface.get_height() // 2), \
+            (surface.get_width() // 2, surface.get_height()), 5)  
+    elif index == 3:
+        pygame.draw.line(surface, (0, 0, 0), \
+            (0, surface.get_height() // 2), (surface.get_width() // 2, surface.get_height()), 5)  
+
+    return surface
+    
+
+def make_object_images(name='plant', obj_type=1):
+    images = {}
+    images['idle'] = [make_idle_image(name, obj_type)]
+    images['walk'] = make_walk_images(name, obj_type)
+    return images
+
+def make_rectangle(color, width, height):
+    surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+    rect = pygame.Rect(0, 0, width, height)
+    pygame.draw.rect(surface, color, rect)
     return surface
 
 # index begin from 1..N
