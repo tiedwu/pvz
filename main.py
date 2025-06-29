@@ -16,12 +16,16 @@ class Game:
 
     def update(self):
         self.zombies.group.update()
+        self.plants.group.update()
 
     def draw(self):
         draw_grids(self.screen)
 
         self.zombies.group.draw(self.screen)
         self.plants.group.draw(self.screen)
+        for plant in self.plants.group:
+            plant.draw(self.screen)
+
 
     def loop(self):
         clock = pygame.time.Clock()

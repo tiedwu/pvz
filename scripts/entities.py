@@ -22,7 +22,6 @@ class Entity(pygame.sprite.Sprite):
         surf.blit(self.image, self.rect.topleft)
 
     def update(self):
-        self._move()
         self._update_animation()
         self.image = self.images[self.action][self.frame]
         self.rect = self.image.get_rect(topleft=self.pos) 
@@ -32,15 +31,11 @@ class Entity(pygame.sprite.Sprite):
         self.frame_count += 1
         if self.frame_count > self.animation_duration:
             self.frame += 1
+            if self.frame >= len(self.images[self.action]):
+                self.frame = 0
             self.frame_count = 0
 
-        if self.frame >= len(self.images[self.action]):
-            self.frame = 0
+        
 
-    def _move(self):
-        if self.action != 'walk':
-            self.frame = 0
-            self.action = 'walk'
-        self.pos[0] += self.velocity[0]
-        self.pos[1] += self.velocity[1]
+    
 

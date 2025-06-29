@@ -3,7 +3,7 @@ import random
 
 from scripts.constants import ROAD_ROWS, ROAD_COLS, ZOMBIE_SPAWN_COL
 from scripts.zombies import ZombieGenerator
-from scripts.plants import Plant
+from scripts.plants import PeaShooter
 
 
 class Spawner:
@@ -29,7 +29,7 @@ class Spawner:
                     zombie_generator = ZombieGenerator()
                     sprite = zombie_generator.get_zombie(permutation)
                 elif self.name == 'plant':
-                    sprite = Plant(permutation)
+                    sprite = PeaShooter(permutation)
                 #print(sprite)
                 self.exists[permutation] = sprite
                 self.group.add(sprite)

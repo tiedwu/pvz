@@ -108,6 +108,22 @@ def make_rectangle(color, width, height):
     pygame.draw.rect(surface, color, rect)
     return surface
 
+def make_bullet_images(radius):
+    images = {}
+    images['idle'] = [make_circle((255, 0, 0), radius)]
+    images['walk'] = [make_circle((255, 0, 0), radius)]
+    return images
+
+def make_circle(color, radius):
+    surface = pygame.Surface((2 * radius, 2 * radius), pygame.SRCALPHA, 32)
+    pygame.draw.circle(surface, color, (radius, radius), radius)
+    return surface
+
+def make_mower_object(width, height, number):
+    surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+    pass
+
+
 # index begin from 1..N
 def get_pos_from_permutation(obj, permutation):
     row, col = permutation

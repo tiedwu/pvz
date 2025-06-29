@@ -30,6 +30,18 @@ class Zombie(Entity):
 
     def get_velocity(self):
         return self.velocity
+    
+    def _move(self):
+        if self.action != 'walk':
+            self.frame = 0
+            self.action = 'walk'
+        self.pos[0] += self.velocity[0]
+        self.pos[1] += self.velocity[1]
+
+    def update(self):
+        self._move()
+        super().update()
+        
 
 class Zombie_1(Zombie):
     #IMAGES = {'idle': make_walk_images('zombie', 1), 'walk': make_walk_images('zombie', 1)}
