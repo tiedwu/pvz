@@ -72,8 +72,7 @@ def make_walk_images(name='plant', obj_type=1):
         text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
         surface.blit(text, (surface.get_width() // 2 - text.get_width() // 2, \
             surface.get_height() // 2 - text.get_height() // 2))
-    #pygame.draw.line(surface, (0, 0, 0), \
-    #        (0, surface.get_height() // 2), (surface.get_width() // 2, 0), 5)
+    
         images.append(make_walk_animation(surface, i))
     
     return images
@@ -121,8 +120,19 @@ def make_circle(color, radius):
 
 def make_mower_object(width, height, number):
     surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
-    pass
+    pygame.draw.rect(surface, (255, 255, 0), (10, 10, width - 20, height - 25))
+    pygame.draw.circle(surface, (0, 0, 0), (10 + 10, height - 20), 10)
+    pygame.draw.circle(surface, (0, 0, 0), (width - 20, height - 20), 10)
+    text = OBJECT_FONT.render(str(number), 1, (0, 0, 255))
+    surface.blit(text, (surface.get_width() // 2 - text.get_width() // 2, \
+            10 + ((height - 25) // 2 - text.get_height() // 2)))
+    return surface
 
+def make_mower_images(i):
+    images = {}
+    images['idle'] = [make_mower_object(64, 64, i)]
+    images['walk'] = images['idle']
+    return images
 
 # index begin from 1..N
 def get_pos_from_permutation(obj, permutation):

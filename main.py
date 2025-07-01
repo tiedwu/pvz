@@ -1,6 +1,7 @@
 import pygame
-from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
+from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, NUMBER_OF_MOWERS
 from scripts.spawner import Spawner
+from scripts.mowers import Mower
 
 # see grids
 from scripts.utils import draw_grids
@@ -13,18 +14,35 @@ class Game:
         pygame.display.set_caption('Plants VS Zombies')
         self.zombies = Spawner('zombie')
         self.plants = Spawner('plant')
+        self.mowers = self._create_mowers()
+
+    def _create_mowers(self):
+        mowers = []
+        pass
+        for i in range(NUMBER_OF_MOWERS):
+            mowers.append(Mower(None, i))
+        return mowers
+
 
     def update(self):
         self.zombies.group.update()
         self.plants.group.update()
 
+        for mower in self.mowers:
+            mower.update()
+            
+
     def draw(self):
         draw_grids(self.screen)
+
+        for mower in self.mowers:
+            mower.draw(self.screen)
 
         self.zombies.group.draw(self.screen)
         self.plants.group.draw(self.screen)
         for plant in self.plants.group:
             plant.draw(self.screen)
+
 
 
     def loop(self):
@@ -43,6 +61,21 @@ class Game:
 
                     if event.key == pygame.K_p:
                         self.plants.generate()
+
+                    if event.key ==pygame.K_1:
+                        print('mower 1')
+                        self.mowers[0].attack()
+                    if event.key ==pygame.K_2:
+                        self.mowers[1].attack()
+                    if event.key ==pygame.K_3:
+                        self.mowers[2].attack()
+                    if event.key ==pygame.K_4:
+                        self.mowers[3].attack()
+                    if event.key ==pygame.K_5:
+                        self.mowers[4].attack()
+                    if event.key ==pygame.K_6:
+                        self.mowers[5].attack()
+                    
 
             self.update()
             self.draw()
