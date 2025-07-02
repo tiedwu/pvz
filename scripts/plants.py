@@ -1,10 +1,10 @@
 from scripts.entities import Entity
 
-from scripts.utils import make_object_image
 from scripts.projectiles import Bullet
+from scripts.utils import get_plants
 
 class Plant(Entity):
-    def __init__(self, permutation, images={'idle': [make_object_image('plant')]}):
+    def __init__(self, permutation, images=get_plants()['PeaShooter']):
         super().__init__(None, permutation, images)
         self.projectiles = []
 
@@ -31,10 +31,12 @@ class Plant(Entity):
 class PeaShooter(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
+    NAME = 'PeaShooter'
+    IMAGES=get_plants()[NAME]
     def __init__(self, permutation):
-        super().__init__(permutation)
+        super().__init__(permutation, self.IMAGES)
         self.animation_duration = self.ANIMATION_DURATION
-        self.name = 'PeaShooter'
+        self.name = self.NAME
         self.shoot_duration = self.SHOOT_DURATION
         self.shoot_count = 0
 

@@ -2,8 +2,16 @@
 import pygame
 from scripts.constants import *
 
+
+
 pygame.font.init()
 OBJECT_FONT = pygame.font.SysFont('comicsans', 30)
+
+
+def get_plants():
+    # plants
+    plants = {"PeaShooter": {'idle': [make_object_image('plant')]},}
+    return plants
 
 def draw_grids(display):
     display.fill(GRASS_COLOR)
@@ -133,6 +141,22 @@ def make_mower_images(i):
     images['idle'] = [make_mower_object(64, 64, i)]
     images['walk'] = images['idle']
     return images
+
+def make_plant_image(name, width, height):
+    plants = get_plants()
+    image = None
+    if name == 'PeaShooter':
+        image = plants[name]['idle'][0]
+        image = pygame.transform.scale(image, (width, height))
+    return image
+
+def make_card_image(width, height, name, cost):
+    surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+    image = make_plant_image(name, width * 0.8, height * 0.8)
+    surface.blit(image, (10, 10))
+    
+    return surface
+
 
 # index begin from 1..N
 def get_pos_from_permutation(obj, permutation):

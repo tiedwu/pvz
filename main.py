@@ -2,6 +2,7 @@ import pygame
 from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, NUMBER_OF_MOWERS
 from scripts.spawner import Spawner
 from scripts.mowers import Mower
+from scripts.cards import Generator
 
 # see grids
 from scripts.utils import draw_grids
@@ -15,6 +16,8 @@ class Game:
         self.zombies = Spawner('zombie')
         self.plants = Spawner('plant')
         self.mowers = self._create_mowers()
+        self.card_generator = Generator()
+        self.cards = []
 
     def _create_mowers(self):
         mowers = []
@@ -23,6 +26,11 @@ class Game:
             mowers.append(Mower(None, i))
         return mowers
 
+    def generate_card(self):
+        print(self.card_generator.get_occupies())
+        card = self.card_generator.get_card()
+        if card != None:
+            self.cards.append(card)
 
     def update(self):
         self.zombies.group.update()
@@ -37,6 +45,9 @@ class Game:
 
         for mower in self.mowers:
             mower.draw(self.screen)
+
+        for card in self.cards:
+            card.draw(self.screen)
 
         self.zombies.group.draw(self.screen)
         self.plants.group.draw(self.screen)
@@ -63,7 +74,6 @@ class Game:
                         self.plants.generate()
 
                     if event.key ==pygame.K_1:
-                        print('mower 1')
                         self.mowers[0].attack()
                     if event.key ==pygame.K_2:
                         self.mowers[1].attack()
@@ -76,6 +86,8 @@ class Game:
                     if event.key ==pygame.K_6:
                         self.mowers[5].attack()
                     
+                    if event.key == pygame.K_c:
+                        self.generate_card()
 
             self.update()
             self.draw()
