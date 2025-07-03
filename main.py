@@ -1,4 +1,6 @@
 import pygame
+import random
+
 from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, NUMBER_OF_MOWERS
 from scripts.spawner import Spawner
 from scripts.mowers import Mower
@@ -17,18 +19,25 @@ class Game:
         self.plants = Spawner('plant')
         self.mowers = self._create_mowers()
         self.card_generator = Generator()
-        self.cards = []
+        # self.cards = []
+        self.plant_taken = None
+        self.map = 'map0'
+        self.cards = self._make_cards()
+        
+    
+    def _make_cards(self):
+        return self.card_generator.make_cards(self.map)
 
     def _create_mowers(self):
         mowers = []
-        pass
+        
         for i in range(NUMBER_OF_MOWERS):
             mowers.append(Mower(None, i))
         return mowers
 
     def generate_card(self):
-        print(self.card_generator.get_occupies())
-        card = self.card_generator.get_card()
+        
+        card = self.card_generator._get_card()
         if card != None:
             self.cards.append(card)
 
@@ -36,10 +45,10 @@ class Game:
         self.zombies.group.update()
         self.plants.group.update()
 
+
         for mower in self.mowers:
             mower.update()
             
-
     def draw(self):
         draw_grids(self.screen)
 
@@ -54,7 +63,16 @@ class Game:
         for plant in self.plants.group:
             plant.draw(self.screen)
 
-
+    def handle_choice(self):
+        pos = pygame.mouse.get_pos()
+        if not self.plant_taken:
+            for card in self.cards:
+                if card.get_rect().collidepoint(pos):
+                    self.plant_taken = card.name
+                    break
+        else:
+            self.plants.make_plant(self.plant_taken, pos)
+            self.plant_taken = None
 
     def loop(self):
         clock = pygame.time.Clock()
@@ -65,6 +83,11 @@ class Game:
                 if event.type == pygame.QUIT:
                     run = False
                     break
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if event.button == 1:
+                        self.handle_choice()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_z:
@@ -87,7 +110,8 @@ class Game:
                         self.mowers[5].attack()
                     
                     if event.key == pygame.K_c:
-                        self.generate_card()
+                        # self.generate_card()
+                        pass
 
             self.update()
             self.draw()

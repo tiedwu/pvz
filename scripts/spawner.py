@@ -3,7 +3,9 @@ import random
 
 from scripts.constants import ROAD_ROWS, ROAD_COLS, ZOMBIE_SPAWN_COL
 from scripts.zombies import ZombieGenerator
-from scripts.plants import PeaShooter
+
+from scripts.plants import PeaShooter, SunFlower
+from scripts.utils import get_permutation_from_pos
 
 
 class Spawner:
@@ -12,6 +14,15 @@ class Spawner:
         self.name = name
         self.exists = {}
         self.group = pygame.sprite.Group()
+
+    def make_plant(self, name, pos):
+        found, row, col = get_permutation_from_pos(pos)
+        permutation = (row, col)
+        if name == 'PeaShooter':
+            sprite = PeaShooter(permutation)
+        elif name == 'SunFlower':
+            sprite = SunFlower(permutation)
+        self.group.add(sprite)
 
     def generate(self):
         max_tries = 3

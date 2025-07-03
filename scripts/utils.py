@@ -6,12 +6,22 @@ from scripts.constants import *
 
 pygame.font.init()
 OBJECT_FONT = pygame.font.SysFont('comicsans', 30)
-
+COST_FONT = pygame.font.SysFont('comicsans', 10)
 
 def get_plants():
     # plants
-    plants = {"PeaShooter": {'idle': [make_object_image('plant')]},}
+    plants = {"PeaShooter": {'images': {'idle': [make_object_image('plant')]},'cost': 100,},
+              "SunFlower": {'images': {'idle': [make_object_image('plant', 2)]}, 'cost': 50}}
     return plants
+
+def shootable_plants():
+    shootable = ['PeaShooter']
+    return shootable
+
+def cards_by_map(map):
+    card = []
+    if map == 'map0':
+        return ['SunFlower', 'PeaShooter']
 
 def draw_grids(display):
     display.fill(GRASS_COLOR)
@@ -144,16 +154,17 @@ def make_mower_images(i):
 
 def make_plant_image(name, width, height):
     plants = get_plants()
-    image = None
-    if name == 'PeaShooter':
-        image = plants[name]['idle'][0]
-        image = pygame.transform.scale(image, (width, height))
+    image = plants[name]['images']['idle'][0]
+    image = pygame.transform.scale(image, (width, height))
     return image
 
 def make_card_image(width, height, name, cost):
     surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
     image = make_plant_image(name, width * 0.8, height * 0.8)
     surface.blit(image, (10, 10))
+    text = COST_FONT.render(str(cost), 1, (0, 0, 0))
+    surface.blit(text, (width * 0.8 - text.get_width() + 10, \
+            height * 0.8 - text.get_height() + 10))
     
     return surface
 
@@ -164,3 +175,21 @@ def get_pos_from_permutation(obj, permutation):
     x = MOWER_SPACE + (col - 1) * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_width() // 2)
     y = CARD_HEIGHT + (row - 1) * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_height() // 2)
     return x, y
+
+def get_permutation_from_pos(pos):
+    find_it = False
+    rowIndex, colIndex = -1, -1
+    for row in range(ROAD_ROWS):
+        for col in range(ROAD_COLS):
+            rect = pygame.Rect(MOWER_SPACE + col * ROAD_GRID_SIZE, ROAD_GRID_SIZE + row * ROAD_GRID_SIZE \
+                               , ROAD_GRID_SIZE, ROAD_GRID_SIZE)
+            if rect.collidepoint(pos):
+                find_it = True
+                break
+        if find_it == True:
+                break
+    if find_it:
+        rowIndex = row + 1
+        colIndex = col + 1
+    
+    return find_it, rowIndex, colIndex
