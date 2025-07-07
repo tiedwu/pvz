@@ -27,6 +27,9 @@ class ZombieGenerator:
 class Zombie(Entity):
     def __init__(self, permutation, images=make_object_images('zombie')):
         super().__init__(None, permutation, images)
+        self.live = True
+        self.max_hp = self.hp = 100
+        self.hp = 80
 
     def get_velocity(self):
         return self.velocity
@@ -41,7 +44,6 @@ class Zombie(Entity):
     def update(self):
         self._move()
         super().update()
-        
 
 class Zombie_1(Zombie):
     #IMAGES = {'idle': make_walk_images('zombie', 1), 'walk': make_walk_images('zombie', 1)}

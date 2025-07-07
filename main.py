@@ -62,6 +62,8 @@ class Game:
         self.plants.group.draw(self.screen)
         for plant in self.plants.group:
             plant.draw(self.screen)
+        for zombie in self.zombies.group:
+            zombie.draw(self.screen)
 
     def handle_choice(self):
         pos = pygame.mouse.get_pos()

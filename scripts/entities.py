@@ -17,9 +17,18 @@ class Entity(pygame.sprite.Sprite):
 
         self.velocity = (0, 0)
         self.frame_count = 0
+        
+        self.live = False
 
     def draw(self, surf):
         surf.blit(self.image, self.rect.topleft)
+
+        if self.live:
+            width = 64 # suitable obj width 
+            pygame.draw.rect(surf, (0, 255, 0), (self.rect.x, self.rect.y - 10, width, 5))
+            width = width * (1 - self.hp / self.max_hp)
+            if width > 0:
+                pygame.draw.rect(surf, (255, 0, 0), (self.rect.x + self.rect.width - width, self.rect.y - 10, width, 5))
 
     def update(self):
         self._update_animation()

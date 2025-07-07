@@ -24,7 +24,8 @@ def cards_by_map(map):
         return ['SunFlower', 'PeaShooter']
 
 def draw_grids(display):
-    display.fill(GRASS_COLOR)
+    #display.fill(GRASS_COLOR)
+    display.fill(GROUND_COLOR)
 
     # horizontal lines
     for i in range(ROAD_ROWS + 1):
