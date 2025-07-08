@@ -41,7 +41,27 @@ class Game:
         if card != None:
             self.cards.append(card)
 
+    def _check_live(self):
+        for plant in self.plants.group:
+            if plant.hp == 0:
+                self.plants.group.remove(plant)
+
+        for zombie in self.zombies.group:
+            if zombie.hp == 0:
+                self.zombies.group.remove(zombie)
+
+    def handle_collision(self):
+        for plant in self.plants.group:
+            plant.hit(self.zombies.group)
+
+        for zombie in self.zombies.group:
+            zombie.hit(self.plants.group)
+
+        self._check_live()
+
     def update(self):
+        self.handle_collision()
+
         self.zombies.group.update()
         self.plants.group.update()
 
@@ -118,7 +138,7 @@ class Game:
             self.update()
             self.draw()
 
-            pygame.display.update()
+            pygame.display.flip()
 
         pygame.quit()
 

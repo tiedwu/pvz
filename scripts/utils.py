@@ -18,6 +18,10 @@ def shootable_plants():
     shootable = ['PeaShooter']
     return shootable
 
+def shootable_zombies():
+    shootable = ['Zombie_2']
+    return shootable
+
 def cards_by_map(map):
     card = []
     if map == 'map0':

@@ -1,6 +1,6 @@
 from scripts.entities import Entity
 
-from scripts.projectiles import Bullet
+from scripts.projectiles import PeaShooter_Bullet
 from scripts.utils import get_plants, shootable_plants
 
 class Plant(Entity):
@@ -18,9 +18,28 @@ class Plant(Entity):
         self.max_hp = self.hp = 100
         self.hp = 100
 
-    def _shoot(self):
-        bullet = Bullet((self.rect.x + self.rect.width, self.rect.y), None, self.name)
+
+    def _bullet(self):
+        if self.name == 'PeaShooter':
+            bullet = PeaShooter_Bullet((self.rect.x + self.rect.width, self.rect.y), None, self.name)
         self.projectiles.append(bullet)
+
+    def hit(self, objs):
+        for projectile in self.projectiles:
+            if projectile.collided(objs):
+                self.projectiles.remove(projectile)
+
+
+    def _shoot(self):
+        
+        for projectile in self.projectiles:
+            projectile.update()
+
+        if self.name in shootable_plants():
+            self.shoot_count += 1
+            if self.shoot_count >= self.shoot_duration:
+                self._bullet()
+                self.shoot_count = 0
 
     def draw(self, surf):
         super().draw(surf)
@@ -30,13 +49,7 @@ class Plant(Entity):
 
     def update(self):
         super().update()
-        for projectile in self.projectiles:
-            projectile.update()
-        self.shoot_count += 1
-        if self.shoot_count >= self.shoot_duration:
-            self.shoot_count = 0
-            if self.name in shootable_plants():
-                self._shoot()
+        self._shoot()
 
 class PeaShooter(Plant):
     ANIMATION_DURATION = 1 * 60
@@ -44,6 +57,7 @@ class PeaShooter(Plant):
     NAME = 'PeaShooter'
     def __init__(self, permutation):
         super().__init__(self.NAME, permutation)
+        self.shoot_duration = self.SHOOT_DURATION
        
 class SunFlower(Plant):
     ANIMATION_DURATION = 1 * 60

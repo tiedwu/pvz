@@ -26,6 +26,9 @@ ZOMBIE_SPAWN_COL = 17
 # zombies appears corresponding to map/level
 ZOMBIES_APPEARS = {'map0': {'zombie_1': 0.7, 'zombie_2': 0.3}}
 
+DAMAGE_PLANTS = {'PeaShooter': 10}
+DAMAGE_ZOMBIES = {'Zombie_2': 30}
+
 
 
 

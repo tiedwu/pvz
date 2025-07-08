@@ -1,10 +1,10 @@
 import pygame
 
-from scripts.utils import get_pos_from_permutation
+from scripts.utils import get_pos_from_permutation, shootable_plants
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, permutation, images):
-        super().__init__()
+        super(Entity, self).__init__()
         self.images = images
         self.action = 'idle'
         self.image = self.images[self.action][0]
@@ -28,13 +28,15 @@ class Entity(pygame.sprite.Sprite):
             pygame.draw.rect(surf, (0, 255, 0), (self.rect.x, self.rect.y - 10, width, 5))
             width = width * (1 - self.hp / self.max_hp)
             if width > 0:
-                pygame.draw.rect(surf, (255, 0, 0), (self.rect.x + self.rect.width - width, self.rect.y - 10, width, 5))
+                startx = max(self.rect.x + self.rect.width - width, self.rect.x)
+                pygame.draw.rect(surf, (255, 0, 0), (startx, self.rect.y - 10, width, 5))
 
     def update(self):
         self._update_animation()
         self.image = self.images[self.action][self.frame]
         self.rect = self.image.get_rect(topleft=self.pos) 
         self.mask = pygame.mask.from_surface(self.image)
+        
 
     def _update_animation(self):
         self.frame_count += 1
