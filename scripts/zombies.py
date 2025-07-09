@@ -78,6 +78,7 @@ class Zombie(Entity):
         if collided == False:
             if self.action != 'walk':
                 self.action = 'walk'
+                self.frame = 0
 
     def _bullet(self):
         if self.name == 'Zombie_2':
@@ -103,7 +104,11 @@ class Zombie(Entity):
     def _in_screen(self):
         if self.pos[0] < SCREEN_WIDTH and self.pos[1] < SCREEN_HEIGHT:
             return True
+        return False
 
+    def inner_home(self):
+        if self.pos[0] < 0:
+            return True
         return False
 
     def update(self):
@@ -116,6 +121,11 @@ class Zombie(Entity):
         
         for projectile in self.projectiles:
             projectile.draw(surf)
+
+    def stop(self):
+        super().stop()
+        for projectile in self.projectiles:
+            projectile.stop()
 
 class Zombie_1(Zombie):
     #IMAGES = {'idle': make_walk_images('zombie', 1), 'walk': make_walk_images('zombie', 1)}

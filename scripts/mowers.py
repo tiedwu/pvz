@@ -1,6 +1,10 @@
+import pygame
+
 from scripts.entities import Entity
+
 from scripts.utils import make_mower_images
-from scripts.constants import MOWER_SPACE, ROAD_GRID_SIZE, MOWER_WIDTH, MOWER_HEIGHT
+from scripts.constants import (MOWER_SPACE, ROAD_GRID_SIZE, MOWER_WIDTH, MOWER_HEIGHT, \
+        SCREEN_WIDTH, SCREEN_HEIGHT)
 
 class Mower(Entity):
     VEL = [1, 0]
@@ -37,8 +41,20 @@ class Mower(Entity):
     def update(self):
         if self.attacked:
             self._move()
-        
+
         super().update()
+
+    def collided(self, objs):
+        collide = False
+        for obj in objs:
+            if pygame.sprite.collide_mask(self, obj):
+                collide = True
+                self.attack()
+                obj.hp = 0
+        return collide
 
     def attack(self):
         self.attacked = True
+
+    def in_screen(self):
+        return self.pos[0] < SCREEN_WIDTH 

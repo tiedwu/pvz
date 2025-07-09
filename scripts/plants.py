@@ -30,8 +30,10 @@ class Plant(Entity):
         damage = 0
         if self.name in DAMAGE_PLANTS.keys():
             damage = DAMAGE_PLANTS[self.name]
+        collided = False
         for obj in objs:
             if pygame.sprite.collide_mask(self, obj):
+                collided = True
                 self.attack_count += 1
                 if self.action != 'attack':
                     self.action = 'attack'
@@ -47,6 +49,11 @@ class Plant(Entity):
                 
                     if obj.hp < 0:
                         obj.hp = 0
+
+        if collided == False:
+            if self.action == 'attack':
+                self.action = "idle"
+                self.frame = 0
 
     def _bullet(self):
         if self.name == 'PeaShooter':
@@ -79,6 +86,11 @@ class Plant(Entity):
     def update(self):
         super().update()
         self._shoot()
+
+    def stop(self):
+        super().stop()
+        for projectile in self.projectiles:
+            projectile.stop()
 
 class PeaShooter(Plant):
     ANIMATION_DURATION = 1 * 60

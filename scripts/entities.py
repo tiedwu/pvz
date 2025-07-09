@@ -19,6 +19,7 @@ class Entity(pygame.sprite.Sprite):
         self.frame_count = 0
         
         self.live = False
+        self.stopped = False
 
     def draw(self, surf):
         surf.blit(self.image, self.rect.topleft)
@@ -32,12 +33,12 @@ class Entity(pygame.sprite.Sprite):
                 pygame.draw.rect(surf, (255, 0, 0), (startx, self.rect.y - 10, width, 5))
 
     def update(self):
-        self._update_animation()
+        if not self.stopped:
+            self._update_animation()
         self.image = self.images[self.action][self.frame]
         self.rect = self.image.get_rect(topleft=self.pos) 
         self.mask = pygame.mask.from_surface(self.image)
         
-
     def _update_animation(self):
         self.frame_count += 1
         if self.frame_count > self.animation_duration:
@@ -45,6 +46,10 @@ class Entity(pygame.sprite.Sprite):
             if self.frame >= len(self.images[self.action]):
                 self.frame = 0
             self.frame_count = 0
+
+    def stop(self):
+        self.stopped = True
+        self.velocity = [0, 0]
 
         
 

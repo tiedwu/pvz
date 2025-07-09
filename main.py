@@ -15,13 +15,17 @@ class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Plants VS Zombies')
+        self._reset('map0')
+
+    def _reset(self, map):
+        self.gameover = False
+        self.map = map
         self.zombies = Spawner('zombie')
         self.plants = Spawner('plant')
         self.mowers = self._create_mowers()
         self.card_generator = Generator()
         # self.cards = []
         self.plant_taken = None
-        self.map = 'map0'
         self.cards = self._make_cards()
         
     
@@ -69,13 +73,36 @@ class Game:
 
 
         for mower in self.mowers:
+            mower.collided(self.zombies.group)
+            if not mower.in_screen():
+                self.mowers.remove(mower)
             mower.update()
+
+        if self.check_gameover():
+            self.gameover = True
+
+            # all thing stop moving
+            self.stop_objs()
+
+    def stop_objs(self):
+        for zombie in self.zombies.group:
+            zombie.stop()
+
+        for plant in self.plants.group:
+            plant.stop()
+
+    def check_gameover(self):
+        gameover = False
+        for zombie in self.zombies.group:
+            if zombie.inner_home():
+                gameover = True
+                break
+        return gameover
+
             
     def draw(self):
         draw_grids(self.screen)
 
-        for mower in self.mowers:
-            mower.draw(self.screen)
 
         for card in self.cards:
             card.draw(self.screen)
@@ -86,6 +113,15 @@ class Game:
             plant.draw(self.screen)
         for zombie in self.zombies.group:
             zombie.draw(self.screen)
+
+        for mower in self.mowers:
+            mower.draw(self.screen)
+
+        if self.gameover:
+            self.draw_gameover()
+
+    def draw_gameover(self):
+        pass
 
     def handle_choice(self):
         pos = pygame.mouse.get_pos()
