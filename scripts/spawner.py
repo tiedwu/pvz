@@ -4,7 +4,7 @@ import random
 from scripts.constants import ROAD_ROWS, ROAD_COLS, ZOMBIE_SPAWN_COL
 from scripts.zombies import ZombieGenerator
 
-from scripts.plants import PeaShooter, SunFlower
+from scripts.plants import PeaShooter, SunFlower, ThornyNut
 from scripts.utils import get_permutation_from_pos
 
 
@@ -22,6 +22,8 @@ class Spawner:
             sprite = PeaShooter(permutation)
         elif name == 'SunFlower':
             sprite = SunFlower(permutation)
+        elif name == 'ThornyNut':
+            sprite = ThornyNut(permutation)
         self.group.add(sprite)
 
     def generate(self):

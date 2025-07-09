@@ -11,21 +11,30 @@ COST_FONT = pygame.font.SysFont('comicsans', 10)
 def get_plants():
     # plants
     plants = {"PeaShooter": {'images': {'idle': [make_object_image('plant')]},'cost': 100,},
-              "SunFlower": {'images': {'idle': [make_object_image('plant', 2)]}, 'cost': 50}}
+              "SunFlower": {'images': {'idle': [make_object_image('plant', 2)]}, 'cost': 50},
+              "ThornyNut": {'images': make_object_images('plant', 3), 'cost': 150}}
     return plants
 
 def shootable_plants():
     shootable = ['PeaShooter']
     return shootable
 
+def hitable_plants():
+    hitable = ['ThornyNut']
+    return hitable
+
 def shootable_zombies():
     shootable = ['Zombie_2']
     return shootable
 
+def hitable_zombies():
+    hitable = ['Zombie_1']
+    return hitable
+
 def cards_by_map(map):
     card = []
     if map == 'map0':
-        return ['SunFlower', 'PeaShooter']
+        return ['SunFlower', 'PeaShooter', 'ThornyNut']
 
 def draw_grids(display):
     #display.fill(GRASS_COLOR)
@@ -62,7 +71,7 @@ def make_object_image(name='plant', obj_type=1):
     if name == 'plant':
         color = (0, 255, 255)
     elif name == 'zombie':
-        color = (255, 0, 0)
+        color = ZOMBIE_COLOR 
     obj_width = obj_height = 64
     surface = make_rectangle(color, obj_width, obj_height)
     text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
@@ -74,7 +83,7 @@ def make_idle_image(name='plant', obj_type=1):
     if name == 'plant':
         color = (0, 255, 255)
     elif name == 'zombie':
-        color = (255, 0, 0)
+        color = ZOMBIE_COLOR
     obj_width = obj_height = 64
     surface = make_rectangle(color, obj_width, obj_height)
     text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
@@ -87,7 +96,7 @@ def make_walk_images(name='plant', obj_type=1):
     if name == 'plant':
         color = (0, 255, 255)
     elif name == 'zombie':
-        color = (255, 0, 0)
+        color = ZOMBIE_COLOR
     obj_width = obj_height = 64
 
     for i in range(4):
@@ -100,8 +109,39 @@ def make_walk_images(name='plant', obj_type=1):
     
     return images
 
+def make_attack_images(name='plant', obj_type=1):
+    images = []
+    if name == 'plant':
+        color = (0, 255, 255)
+    elif name == 'zombie':
+        color = ZOMBIE_COLOR
+    obj_width = obj_height = 64
+
+    for i in range(3):
+        surface = make_rectangle(color, obj_width, obj_height).copy()
+        text = OBJECT_FONT.render(str(obj_type), 1, (255, 255, 255))
+        surface.blit(text, (surface.get_width() // 2 - text.get_width() // 2, \
+            surface.get_height() // 2 - text.get_height() // 2))
+    
+        images.append(make_attack_animation(surface, name, i))
+    
+    return images
+
+def make_attack_animation(surface, family, index):
+    circle = make_circle((255, 0, 0), 10)
+    if family == 'zombie':
+        x = 0
+    elif family == 'plant':
+        x = surface.get_width() - circle.get_width()
+
+    y = surface.get_height() // 4 * (index + 1) - circle.get_height() // 2
+
+    surface.blit(circle, (x, y))
+    return surface
+
 def make_walk_animation(surface, index):
     if index == 0:
+        #surface.blit(circle, (0, surface.get_height() // 2 - circle.get_height() // 2))
         pygame.draw.line(surface, (0, 0, 0), \
             (0, surface.get_height() // 2), (surface.get_width() // 2, 0), 5)
     elif index == 1:
@@ -122,6 +162,7 @@ def make_object_images(name='plant', obj_type=1):
     images = {}
     images['idle'] = [make_idle_image(name, obj_type)]
     images['walk'] = make_walk_images(name, obj_type)
+    images['attack'] = make_attack_images(name, obj_type)
     return images
 
 def make_rectangle(color, width, height):

@@ -20,14 +20,15 @@ SCREEN_HEIGHT = ROAD_GRID_SIZE * (ROAD_ROWS + 1)
 GROUND_COLOR = (235, 230, 164)
 GRASS_COLOR = (112, 192, 72)
 LINE_COLOR = (239, 191, 4)
+ZOMBIE_COLOR = (133, 168, 91)
 
 ZOMBIE_SPAWN_COL = 17
 
 # zombies appears corresponding to map/level
 ZOMBIES_APPEARS = {'map0': {'zombie_1': 0.7, 'zombie_2': 0.3}}
 
-DAMAGE_PLANTS = {'PeaShooter': 10}
-DAMAGE_ZOMBIES = {'Zombie_2': 30}
+DAMAGE_PLANTS = {'PeaShooter': 10, 'ThornyNut': 10}
+DAMAGE_ZOMBIES = {'Zombie_1': 10, 'Zombie_2': 30}
 
 
 

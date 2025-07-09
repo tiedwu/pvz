@@ -1,9 +1,11 @@
 import random
+import pygame
 
 from scripts.entities import Entity
-from scripts.constants import ZOMBIES_APPEARS, SCREEN_WIDTH, SCREEN_HEIGHT
-from scripts.utils import make_object_images, shootable_zombies
+from scripts.constants import ZOMBIES_APPEARS, DAMAGE_ZOMBIES, SCREEN_WIDTH, SCREEN_HEIGHT
+from scripts.utils import make_object_images, shootable_zombies, hitable_zombies
 from scripts.projectiles import Zombie_2_Bullet
+
 
 class ZombieGenerator:
     ZOMBIES_APPEARS = ZOMBIES_APPEARS
@@ -33,23 +35,56 @@ class Zombie(Entity):
         self.hp = 80
         self.projectiles = []
         self.shoot_count = 0
+        self.attack_count = 0
 
     def get_velocity(self):
         return self.velocity
     
     def _move(self):
-        if self.action != 'walk':
-            self.frame = 0
+        if self.action == 'idle':
             self.action = 'walk'
-        self.pos[0] += self.velocity[0]
-        self.pos[1] += self.velocity[1]
+            self.frame = 0
+
+        if self.action == 'walk':
+            self.pos[0] += self.velocity[0]
+            self.pos[1] += self.velocity[1]
+
+    def hit(self, objs):
+        if self.name not in hitable_zombies():
+            return
+        damage = 0
+        if self.name in DAMAGE_ZOMBIES.keys():
+            damage = DAMAGE_ZOMBIES[self.name]
+        collided = False
+        for obj in objs:
+            if pygame.sprite.collide_mask(self, obj):
+                collided = True
+                self.attack_count += 1
+                if self.action != 'attack':
+                    self.action = 'attack'
+
+                # obj cannot move
+                if obj.action != 'attack':
+                    obj.action = 'attack'
+                    obj.frame = 0
+
+                if self.attack_count > self.ATTACK_COUNT:
+                    self.attack_count = 0
+                    obj.hp -= damage
+                
+                    if obj.hp < 0:
+                        obj.hp = 0
+
+        if collided == False:
+            if self.action != 'walk':
+                self.action = 'walk'
 
     def _bullet(self):
         if self.name == 'Zombie_2':
             bullet = Zombie_2_Bullet((self.rect.x, self.rect.y), None, self.name)
         self.projectiles.append(bullet)
 
-    def hit(self, objs):
+    def shoot(self, objs):
         for projectile in self.projectiles:
             if projectile.collided(objs):
                 self.projectiles.remove(projectile)
@@ -71,7 +106,6 @@ class Zombie(Entity):
 
         return False
 
-
     def update(self):
         self._move()
         super().update()
@@ -89,6 +123,7 @@ class Zombie_1(Zombie):
     VEL = [-1, 0]
     ANIMATION_DURATION = 1 * 60
     NAME = 'Zombie_1'
+    ATTACK_COUNT = 1 * 60
     def __init__(self, permutation):
         super().__init__(permutation, images=self.IMAGES)
         self.velocity = self.VEL

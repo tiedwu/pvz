@@ -52,9 +52,11 @@ class Game:
 
     def handle_collision(self):
         for plant in self.plants.group:
+            plant.shoot(self.zombies.group)
             plant.hit(self.zombies.group)
 
         for zombie in self.zombies.group:
+            zombie.shoot(self.plants.group)
             zombie.hit(self.plants.group)
 
         self._check_live()
