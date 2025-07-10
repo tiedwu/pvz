@@ -1,13 +1,15 @@
 import pygame
 import random
 
-from scripts.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, NUMBER_OF_MOWERS
+from scripts.constants import (SCREEN_WIDTH, SCREEN_HEIGHT, FPS, NUMBER_OF_MOWERS, \
+        ENERGY_SPACE, SEED_PACKET_WIDTH, SEED_PACKET_HEIGHT, ROAD_GRID_SIZE)
 from scripts.spawner import Spawner
 from scripts.mowers import Mower
 from scripts.cards import Generator
+from scripts.seeds import SeedPacket
 
 # see grids
-from scripts.utils import draw_grids
+from scripts.utils import draw_grids, make_font
 
 pygame.init()
 
@@ -15,6 +17,8 @@ class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Plants VS Zombies')
+        self.seedpacket = SeedPacket((ENERGY_SPACE // 2 - SEED_PACKET_WIDTH // 2, \
+                ROAD_GRID_SIZE // 2 - SEED_PACKET_HEIGHT // 2))
         self._reset('map0')
 
     def _reset(self, map):
@@ -28,7 +32,6 @@ class Game:
         self.plant_taken = None
         self.cards = self._make_cards()
         
-    
     def _make_cards(self):
         return self.card_generator.make_cards(self.map)
 
@@ -103,6 +106,7 @@ class Game:
     def draw(self):
         draw_grids(self.screen)
 
+        self.seedpacket.draw(self.screen)
 
         for card in self.cards:
             card.draw(self.screen)
@@ -121,7 +125,9 @@ class Game:
             self.draw_gameover()
 
     def draw_gameover(self):
-        pass
+        font_image = make_font('gameover', 'Gameover !!!')
+        self.screen.blit(font_image, (SCREEN_WIDTH // 2 - font_image.get_width() // 2, \
+                SCREEN_HEIGHT // 2 - font_image.get_height() // 2))
 
     def handle_choice(self):
         pos = pygame.mouse.get_pos()

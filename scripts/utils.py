@@ -7,6 +7,9 @@ from scripts.constants import *
 pygame.font.init()
 OBJECT_FONT = pygame.font.SysFont('comicsans', 30)
 COST_FONT = pygame.font.SysFont('comicsans', 10)
+ASTERISK_FONT = pygame.font.SysFont('comicsans', 60)
+SEED_FONT = pygame.font.SysFont('comicsans', 20)
+GAMEOVER_FONT = pygame.font.SysFont('comicsans', 100)
 
 def get_plants():
     plants = {"PeaShooter": {'images': make_object_images('plant', 1), 'cost': 100,},
@@ -180,6 +183,33 @@ def make_bullet_images(radius):
 def make_circle(color, radius):
     surface = pygame.Surface((2 * radius, 2 * radius), pygame.SRCALPHA, 32)
     pygame.draw.circle(surface, color, (radius, radius), radius)
+    return surface
+
+def make_font(font='seed', value=0):
+    if font == 'seed':
+        font = SEED_FONT
+        color = (9, 153, 214)
+    elif font == 'gameover':
+        font = GAMEOVER_FONT
+        color = (255, 0, 0)
+    font_image = font.render(str(value), 1, color)
+    return font_image
+
+
+def make_asterisk(scale):
+    ASPECT_WIDTH = 400
+    ASPECT_HEIGHT = 400
+    STARRY = (230, 255, 80)
+    DARK_BLUE = (3, 5, 54)
+    CIRCLE_COLOR = (237, 163, 14)
+    
+    surface = pygame.Surface((ASPECT_WIDTH, ASPECT_HEIGHT), pygame.SRCALPHA, 32)
+    pygame.draw.circle(surface, CIRCLE_COLOR, (ASPECT_WIDTH // 2, ASPECT_HEIGHT // 2), \
+            ASPECT_WIDTH // 2)
+    points = [(165, 151), (200, 20), (235, 151), (371, 144), (257, 219), \
+            (306, 346), (200, 260), (94, 346), (143, 219), (29, 144)]
+    pygame.draw.polygon(surface, STARRY, points)
+    surface = pygame.transform.scale(surface, (scale, scale))
     return surface
 
 def make_mower_object(width, height, number):
