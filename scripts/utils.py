@@ -9,9 +9,8 @@ OBJECT_FONT = pygame.font.SysFont('comicsans', 30)
 COST_FONT = pygame.font.SysFont('comicsans', 10)
 
 def get_plants():
-    # plants
-    plants = {"PeaShooter": {'images': {'idle': [make_object_image('plant')]},'cost': 100,},
-              "SunFlower": {'images': {'idle': [make_object_image('plant', 2)]}, 'cost': 50},
+    plants = {"PeaShooter": {'images': make_object_images('plant', 1), 'cost': 100,},
+              "SunFlower": {'images': make_object_images('plant', 2), 'cost': 50},
               "ThornyNut": {'images': make_object_images('plant', 3), 'cost': 150}}
     return plants
 
@@ -163,6 +162,7 @@ def make_object_images(name='plant', obj_type=1):
     images['idle'] = [make_idle_image(name, obj_type)]
     images['walk'] = make_walk_images(name, obj_type)
     images['attack'] = make_attack_images(name, obj_type)
+    images['damaged'] = [make_idle_image(name, obj_type)]
     return images
 
 def make_rectangle(color, width, height):

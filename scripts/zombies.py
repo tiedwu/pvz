@@ -6,7 +6,6 @@ from scripts.constants import ZOMBIES_APPEARS, DAMAGE_ZOMBIES, SCREEN_WIDTH, SCR
 from scripts.utils import make_object_images, shootable_zombies, hitable_zombies
 from scripts.projectiles import Zombie_2_Bullet
 
-
 class ZombieGenerator:
     ZOMBIES_APPEARS = ZOMBIES_APPEARS
     def __init__(self, map='map0'):
@@ -62,11 +61,7 @@ class Zombie(Entity):
                 self.attack_count += 1
                 if self.action != 'attack':
                     self.action = 'attack'
-
-                # obj cannot move
-                if obj.action != 'attack':
-                    obj.action = 'attack'
-                    obj.frame = 0
+                    self.frame = 0
 
                 if self.attack_count > self.ATTACK_COUNT:
                     self.attack_count = 0

@@ -34,21 +34,22 @@ class Plant(Entity):
         for obj in objs:
             if pygame.sprite.collide_mask(self, obj):
                 collided = True
-                self.attack_count += 1
-                if self.action != 'attack':
-                    self.action = 'attack'
+                if self.name not in hitable_plants():
+                    if self.action != 'damaged':
+                        self.action = 'damaged'
+                        self.frame = 0
+                else:
+                    self.attack_count += 1
+                    if self.action != 'attack':
+                        self.action = 'attack'
+                        self.frame = 0
 
-                # obj cannot move
-                if obj.action != 'attack':
-                    obj.action = 'attack'
-                    obj.frame = 0
-
-                if self.attack_count > self.ATTACK_COUNT:
-                    self.attack_count = 0
-                    obj.hp -= damage
+                    if self.attack_count > self.ATTACK_COUNT:
+                        self.attack_count = 0
+                        obj.hp -= damage
                 
-                    if obj.hp < 0:
-                        obj.hp = 0
+                        if obj.hp < 0:
+                            obj.hp = 0
 
         if collided == False:
             if self.action == 'attack':
