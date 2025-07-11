@@ -11,6 +11,12 @@ ASTERISK_FONT = pygame.font.SysFont('comicsans', 60)
 SEED_FONT = pygame.font.SysFont('comicsans', 20)
 GAMEOVER_FONT = pygame.font.SysFont('comicsans', 100)
 
+
+def occupied_place(family='plant', occupied={}, pos=(0, 0)):
+    if pos in occupied.keys():
+        return True
+    return False
+
 def get_plants():
     plants = {"PeaShooter": {'images': make_object_images('plant', 1), 'cost': 100,},
               "SunFlower": {'images': make_object_images('plant', 2), 'cost': 50},
@@ -25,6 +31,9 @@ def hitable_plants():
     hitable = ['ThornyNut']
     return hitable
 
+def seed_producing_plants():
+    return ['SunFlower']
+
 def shootable_zombies():
     shootable = ['Zombie_2']
     return shootable
@@ -37,6 +46,10 @@ def cards_by_map(map):
     card = []
     if map == 'map0':
         return ['SunFlower', 'PeaShooter', 'ThornyNut']
+
+def seeds_by_map(map):
+    if map == 'map0':
+        return 100
 
 def draw_grids(display):
     #display.fill(GRASS_COLOR)

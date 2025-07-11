@@ -9,7 +9,7 @@ from scripts.cards import Generator
 from scripts.seeds import SeedPacket
 
 # see grids
-from scripts.utils import draw_grids, make_font
+from scripts.utils import draw_grids, make_font, seed_producing_plants, seeds_by_map, get_plants
 
 pygame.init()
 
@@ -31,7 +31,9 @@ class Game:
         # self.cards = []
         self.plant_taken = None
         self.cards = self._make_cards()
-        
+        self.card_selected = False
+        self.seedpacket.seeds = seeds_by_map(map)
+
     def _make_cards(self):
         return self.card_generator.make_cards(self.map)
 
@@ -51,7 +53,8 @@ class Game:
     def _check_live(self):
         for plant in self.plants.group:
             if plant.hp == 0:
-                self.plants.group.remove(plant)
+                self.plants.remove_plant(plant)
+                #self.plants.group.remove(plant)
 
         for zombie in self.zombies.group:
             if zombie.hp == 0:
@@ -68,12 +71,19 @@ class Game:
 
         self._check_live()
 
+
+    def gather_seeds(self):
+        for plant in self.plants.group:
+            if plant.name in seed_producing_plants():
+                self.seedpacket.seeds += plant.produce()
+
     def update(self):
         self.handle_collision()
 
+        self.gather_seeds()
+
         self.zombies.group.update()
         self.plants.group.update()
-
 
         for mower in self.mowers:
             mower.collided(self.zombies.group)
@@ -131,14 +141,22 @@ class Game:
 
     def handle_choice(self):
         pos = pygame.mouse.get_pos()
-        if not self.plant_taken:
+
+        if not self.card_selected:
             for card in self.cards:
                 if card.get_rect().collidepoint(pos):
                     self.plant_taken = card.name
                     break
+
         else:
-            self.plants.make_plant(self.plant_taken, pos)
-            self.plant_taken = None
+            if self.plant_taken:
+                # check enough seeds to buy the plant
+                cost = get_plants()[self.plant_taken]['cost']
+                if self.seedpacket.seeds >= cost:
+                    if self.plants.make_plant(self.plant_taken, pos):
+                        self.seedpacket.seeds -= cost
+                        self.plant_taken = None
+        self.card_selected = not self.card_selected
 
     def loop(self):
         clock = pygame.time.Clock()
@@ -154,6 +172,7 @@ class Game:
                     
                     if event.button == 1:
                         self.handle_choice()
+                        #self.card_selected = not self.card_selected
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_z:

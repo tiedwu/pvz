@@ -5,7 +5,7 @@ from scripts.constants import ROAD_ROWS, ROAD_COLS, ZOMBIE_SPAWN_COL
 from scripts.zombies import ZombieGenerator
 
 from scripts.plants import PeaShooter, SunFlower, ThornyNut
-from scripts.utils import get_permutation_from_pos
+from scripts.utils import get_permutation_from_pos, occupied_place
 
 
 class Spawner:
@@ -14,6 +14,16 @@ class Spawner:
         self.name = name
         self.exists = {}
         self.group = pygame.sprite.Group()
+        self.occupied = {}
+
+    def reset(self):
+        self.group.clear()
+        self.occupied = {}
+
+    def remove_plant(self, plant):
+        self.group.remove(plant)
+        _, row, col = get_permutation_from_pos(plant.pos)
+        del self.occupied[(row, col)]
 
     def make_plant(self, name, pos):
         found, row, col = get_permutation_from_pos(pos)
@@ -24,7 +34,12 @@ class Spawner:
             sprite = SunFlower(permutation)
         elif name == 'ThornyNut':
             sprite = ThornyNut(permutation)
-        self.group.add(sprite)
+        
+        if not occupied_place(occupied=self.occupied, pos=permutation) and row != -1:
+            self.group.add(sprite)
+            self.occupied[permutation] = 1
+            return True
+        return False
 
     def generate(self):
         max_tries = 3

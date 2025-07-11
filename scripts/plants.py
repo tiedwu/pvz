@@ -3,7 +3,7 @@ import pygame
 from scripts.entities import Entity
 
 from scripts.projectiles import PeaShooter_Bullet
-from scripts.utils import get_plants, shootable_plants, hitable_plants
+from scripts.utils import get_plants, shootable_plants, hitable_plants, make_asterisk
 
 from scripts.constants import DAMAGE_PLANTS
 
@@ -105,9 +105,58 @@ class SunFlower(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
     NAME = 'SunFlower'
+    PRODUCE_DURATION = 8 * 60
+    SEED = 50
+    SEED_SHOW_DURATION = 20
+    SEED_APPEARS = 3
     def __init__(self, permutation):
         super().__init__(self.NAME, permutation)
-        
+        self.produce_count = 0
+        self.seed = self.SEED
+        self.produced = False
+        self.seed_image = make_asterisk(10)
+        self.seed_appears_count = 0
+        self.seed_frame = 0
+        self.seed_appears = self.SEED_APPEARS
+        self.seed_show_duration = self.SEED_SHOW_DURATION
+
+    def produce(self):
+        self.produce_count += 1
+        if self.produce_count > self.PRODUCE_DURATION:
+            self.produce_count = 0
+            self.produced = True
+            return self.seed
+        return 0
+
+    def _draw_produce(self, surf):        
+        if not self.produced:
+            return
+        x = self.pos[0] + self.rect.width // 2 - self.seed_image.get_width() // 2
+        y = self.pos[1] - self.seed_frame * 10
+        surf.blit(self.seed_image, (x, y))
+  
+    def _produce_animated(self):
+        if self.produced:
+            self.seed_appears_count += 1
+
+            if self.seed_appears_count > self.seed_show_duration:
+                self.seed_frame += 1
+                self.seed_appears_count = 0
+
+            if self.seed_frame > self.seed_appears:
+                self.seed_frame = 0
+                self.produced = False
+
+    def update(self):
+        super().update()
+
+        self._produce_animated()
+
+    def draw(self, surf):
+        super().draw(surf)
+
+        self._draw_produce(surf)
+
 class ThornyNut(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
