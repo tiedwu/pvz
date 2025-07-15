@@ -1,6 +1,7 @@
 
 import pygame
 
+from scripts.cards import Generator
 from scripts.constants import EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH 
 from scripts.utils import draw_grids, draw_panel, draw_selection_zone
 
@@ -12,9 +13,15 @@ class Editor:
 
     def __init__(self):
         self.screen = pygame.display.set_mode(EDITOR_SCREEN_SIZE)
+        self.map = 'map0'
+        self.reset()
+
+    def reset(self):
         self.scroll = 0
         self.scrolls = [False, False] # [left, right]
         self.scroll_speed = 1
+        self.card_generator = Generator()
+        self.card_generator.make_cards(None)
 
     def update(self):
         if self.scrolls[0] and self.scroll > 0:

@@ -2,7 +2,7 @@ import random
 import pygame
 
 from scripts.constants import CARD_WIDTH, CARD_HEIGHT, ENERGY_SPACE, MAX_CARD_AMOUNT
-from scripts.utils import make_card_image, get_plants, cards_by_map
+from scripts.utils import make_card_image, get_plants, cards_by_map, plants_by_id
 
 class Generator:
     def __init__(self):
@@ -24,8 +24,11 @@ class Generator:
         return Card(pos, name, cost)
 
     def make_cards(self, map):
-        cards = cards_by_map(map)
         choices = []
+        if map != None:
+            cards = cards_by_map(map)
+        else:
+            cards = plants_by_id()
         for card in cards:
             choices.append(self._get_card(card))
         return choices

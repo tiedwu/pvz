@@ -19,10 +19,15 @@ def occupied_place(family='plant', occupied={}, pos=(0, 0)):
     return False
 
 def get_plants():
-    plants = {"PeaShooter": {'images': make_object_images('plant', 1), 'cost': 100,},
-              "SunFlower": {'images': make_object_images('plant', 2), 'cost': 50},
-              "ThornyNut": {'images': make_object_images('plant', 3), 'cost': 150}}
+    plants = {"PeaShooter": {'id': 0, 'images': make_object_images('plant', 1), 'cost': 100,},
+              "SunFlower": {'id': 1, 'images': make_object_images('plant', 2), 'cost': 50},
+              "ThornyNut": {'id': 2, 'images': make_object_images('plant', 3), 'cost': 150}}
     return plants
+
+def plants_by_id():
+    f = lambda x: get_plants()[x]['id']
+    plants = get_plants().keys()
+    return (sorted([x for x in plants], key=f, reverse=False))
 
 def shootable_plants():
     shootable = ['PeaShooter']
@@ -76,14 +81,17 @@ def draw_grids(display, mode='game', scroll=0):
 
     # road grids
     if mode == 'editor':
-        ROAD_COLS = EDITOR_COLS
-    for i in range(ROAD_COLS):
+        cols = EDITOR_COLS
+    else:
+        cols = ROAD_COLS
+
+    for i in range(cols):
         x = MOWER_SPACE + ROAD_GRID_SIZE * (i + 1)
         pygame.draw.line(display, LINE_COLOR, (x -scroll, ROAD_GRID_SIZE), (x - scroll, SCREEN_HEIGHT))
 
     if mode == 'editor':
         # draw column numbers
-        for i in range(ROAD_COLS):
+        for i in range(cols):
             font_img = COLUMN_FONT.render(str(i+1), 1, (0, 0, 0))
             x = MOWER_SPACE + ROAD_GRID_SIZE * i + ROAD_GRID_SIZE  // 2 -\
                     (font_img.get_width()) / 2 - scroll
