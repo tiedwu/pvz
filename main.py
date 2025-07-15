@@ -82,6 +82,7 @@ class Game:
 
         self.gather_seeds()
 
+
         self.zombies.group.update()
         self.plants.group.update()
 

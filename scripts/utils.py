@@ -10,6 +10,7 @@ COST_FONT = pygame.font.SysFont('comicsans', 10)
 ASTERISK_FONT = pygame.font.SysFont('comicsans', 60)
 SEED_FONT = pygame.font.SysFont('comicsans', 20)
 GAMEOVER_FONT = pygame.font.SysFont('comicsans', 100)
+COLUMN_FONT = pygame.font.SysFont('comicsans', 10)
 
 
 def occupied_place(family='plant', occupied={}, pos=(0, 0)):
@@ -51,7 +52,7 @@ def seeds_by_map(map):
     if map == 'map0':
         return 100
 
-def draw_grids(display):
+def draw_grids(display, mode='game', scroll=0):
     #display.fill(GRASS_COLOR)
     display.fill(GROUND_COLOR)
 
@@ -61,20 +62,42 @@ def draw_grids(display):
                 (SCREEN_WIDTH, i * ROAD_GRID_SIZE))
 
     # mower space
-    pygame.draw.line(display, LINE_COLOR, (MOWER_SPACE, ROAD_GRID_SIZE), (MOWER_SPACE, SCREEN_HEIGHT))
+    pygame.draw.line(display, LINE_COLOR, (MOWER_SPACE - scroll, ROAD_GRID_SIZE), \
+            (MOWER_SPACE - scroll, SCREEN_HEIGHT))
 
-    # energy space
-    pygame.draw.line(display, LINE_COLOR, (ENERGY_SPACE, 0), (ENERGY_SPACE, ROAD_GRID_SIZE))
+    if mode == 'game' or mode == 'editor':
+        # energy space
+        pygame.draw.line(display, LINE_COLOR, (ENERGY_SPACE, 0), (ENERGY_SPACE, ROAD_GRID_SIZE))
 
-    # cards
-    for i in range(MAX_CARD_AMOUNT):
-        x = ENERGY_SPACE + CARD_WIDTH * (i + 1)
-        pygame.draw.line(display, LINE_COLOR, (x, 0), (x, ROAD_GRID_SIZE))
+        # cards
+        for i in range(MAX_CARD_AMOUNT):
+            x = ENERGY_SPACE + CARD_WIDTH * (i + 1)
+            pygame.draw.line(display, LINE_COLOR, (x, 0), (x, ROAD_GRID_SIZE))
 
     # road grids
+    if mode == 'editor':
+        ROAD_COLS = EDITOR_COLS
     for i in range(ROAD_COLS):
         x = MOWER_SPACE + ROAD_GRID_SIZE * (i + 1)
-        pygame.draw.line(display, LINE_COLOR, (x, ROAD_GRID_SIZE), (x, SCREEN_HEIGHT))
+        pygame.draw.line(display, LINE_COLOR, (x -scroll, ROAD_GRID_SIZE), (x - scroll, SCREEN_HEIGHT))
+
+    if mode == 'editor':
+        # draw column numbers
+        for i in range(ROAD_COLS):
+            font_img = COLUMN_FONT.render(str(i+1), 1, (0, 0, 0))
+            x = MOWER_SPACE + ROAD_GRID_SIZE * i + ROAD_GRID_SIZE  // 2 -\
+                    (font_img.get_width()) / 2 - scroll
+            y = ROAD_GRID_SIZE
+            display.blit(font_img, (x, y))
+
+def draw_selection_zone(display):
+    x = ENERGY_SPACE + CARD_WIDTH * MAX_CARD_AMOUNT + 100
+    width = CARD_WIDTH * 4
+    pygame.draw.rect(display, GRASS_COLOR, (x, 0, width, ROAD_GRID_SIZE))
+
+
+def draw_panel(display):
+    pygame.draw.rect(display, GROUND_COLOR, (SCREEN_WIDTH + 10, 0, SELECT_ZONE - 10, SCREEN_HEIGHT))
 
 def place_object(display, obj, permulation):
     row, col = permulation

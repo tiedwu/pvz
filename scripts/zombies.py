@@ -85,6 +85,24 @@ class Zombie(Entity):
             if projectile.collided(objs):
                 self.projectiles.remove(projectile)
 
+        # check any plants was collided
+        collided = False
+        for obj in objs:
+            if pygame.sprite.collide_mask(self, obj):
+                collided = True
+
+        if collided == True:
+            self.action = 'idle'
+            self.velocity = (0, 0)
+
+        else:
+            self.action = 'walk'
+            self.velocity = self.VEL
+        
+
+    def collided(self, objs):
+        pass
+
     def _shoot(self):
         
         for projectile in self.projectiles:
