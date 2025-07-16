@@ -1,36 +1,54 @@
 import random
 import pygame
 
-from scripts.constants import CARD_WIDTH, CARD_HEIGHT, ENERGY_SPACE, MAX_CARD_AMOUNT
+from scripts.constants import (CARD_WIDTH, CARD_HEIGHT, ENERGY_SPACE, \
+        MAX_CARD_AMOUNT, EDITOR_CARDS_SELECTED)
 from scripts.utils import make_card_image, get_plants, cards_by_map, plants_by_id
 
 class Generator:
-    def __init__(self):
-        self.occupied = [0] * MAX_CARD_AMOUNT
+    def __init__(self, mode='game'):
+        if mode == 'game':
+            self.occupied = [0] * MAX_CARD_AMOUNT
+        elif mode == 'editor':
+            self.occupied = [0] * EDITOR_CARDS_SELECTED
+        self.mode = mode
 
     def get_occupies(self):
         return self.occupied
-    
-    def _get_card(self, name=None):
+
+
+    def get_card_in_box(self, card):
+        return self._get_card(card, placement='box')
+
+    def _get_card(self, name=None, placement='box'):
         if not name:
             name, cost = self._take_card()
         else:
-            cost = cost = get_plants()[name]['cost']
-        place = self._get_place()
-        if place == -1:
-            return None
-        x = ENERGY_SPACE + place * CARD_WIDTH
+            cost = get_plants()[name]['cost']
+
+        if placement == 'box':
+            place = self._get_place()
+            if place == -1:
+                return None
+
+            x = ENERGY_SPACE + place * CARD_WIDTH
+        elif placement == 'editor':
+            # 0, 1, 2, 3
+            # 4, 5, 6, 7
+            index = get_plants()[name]['id']
+            x = ENERGY_SPACE + CARD_WIDTH * MAX_CARD_AMOUNT + 100 \
+                    + (index %  EDITOR_CARDS_SELECTED) * CARD_WIDTH
         pos = (x, 0)
         return Card(pos, name, cost)
 
-    def make_cards(self, map):
+    def make_cards(self, map, placement='editor'):
         choices = []
         if map != None:
             cards = cards_by_map(map)
         else:
             cards = plants_by_id()
         for card in cards:
-            choices.append(self._get_card(card))
+            choices.append(self._get_card(card, placement))
         return choices
     
     def _take_card(self):
@@ -41,7 +59,7 @@ class Generator:
         return name, cost
     
     def _get_place(self):
-        for index in range(MAX_CARD_AMOUNT):
+        for index in range(len(self.occupied)):
             if self.occupied[index] == 0:
                 self.occupied[index] = 1
                 return index
@@ -56,6 +74,9 @@ class Card:
         self.image = make_card_image(self.width, self.height, name, cost)
         self.pos = list(pos)
         self.name = name
+
+    def get_id(self):
+        return get_plants()[self.name]['id']
 
     def draw(self, surf):
         surf.blit(self.image, self.pos)

@@ -1,6 +1,7 @@
 
 import pygame
 from scripts.constants import *
+from itertools import batched
 
 
 
@@ -21,7 +22,23 @@ def occupied_place(family='plant', occupied={}, pos=(0, 0)):
 def get_plants():
     plants = {"PeaShooter": {'id': 0, 'images': make_object_images('plant', 1), 'cost': 100,},
               "SunFlower": {'id': 1, 'images': make_object_images('plant', 2), 'cost': 50},
-              "ThornyNut": {'id': 2, 'images': make_object_images('plant', 3), 'cost': 150}}
+              "CherryBomb": {'id': 2, 'images': make_object_images('plant', 3), 'cost': 150},
+              "Chomper": {'id': 3, 'images': make_object_images('plant', 4), 'cost': 150},
+              "HypnoShroom": {'id': 4, 'images': make_object_images('plant', 5), 'cost': 75},
+              "IceShroom": {'id': 5, 'images': make_object_images('plant', 6), 'cost': 75},
+              "Jalapeno": {'id': 6, 'images': make_object_images('plant', 7), 'cost': 125},
+              "PotatoMine": {'id': 7, 'images': make_object_images('plant', 8), 'cost': 25},
+              "PuffShroom": {'id': 8, 'images': make_object_images('plant', 9), 'cost': 0},
+              "WallNut": {'id': 9, 'images': make_object_images('plant', 10), 'cost': 50},
+              "RepeaterPea": {'id': 10, 'images': make_object_images('plant', 11), 'cost': 200},
+              "ScaredyShroom": {'id': 11, 'images': make_object_images('plant', 12), 'cost': 25},
+              "SnowPea": {'id': 12, 'images': make_object_images('plant', 13), 'cost': 175},
+              "Spikeweed": {'id': 13, 'images': make_object_images('plant', 14), 'cost': 100},
+              "Squash": {'id': 14, 'images': make_object_images('plant', 15), 'cost': 50},
+              "SunShroom": {'id': 15, 'images': make_object_images('plant', 16), 'cost': 25},
+              "ThreepeaShooter": {'id': 16, 'images': make_object_images('plant', 17), 'cost': 325},
+              "ThornyNut": {'id': 17, 'images': make_object_images('plant', 18), 'cost': 150}}
+    
     return plants
 
 def plants_by_id():
@@ -100,7 +117,7 @@ def draw_grids(display, mode='game', scroll=0):
 
 def draw_selection_zone(display):
     x = ENERGY_SPACE + CARD_WIDTH * MAX_CARD_AMOUNT + 100
-    width = CARD_WIDTH * 4
+    width = CARD_WIDTH * EDITOR_CARDS_SELECTED 
     pygame.draw.rect(display, GRASS_COLOR, (x, 0, width, ROAD_GRID_SIZE))
 
 
@@ -288,6 +305,13 @@ def make_card_image(width, height, name, cost):
     
     return surface
 
+def over_card(card, pos):
+    if card.get_rect().collidepoint(pos):
+        return True
+    return False
+
+
+
 
 # index begin from 1..N
 def get_pos_from_permutation(obj, permutation):
@@ -313,3 +337,25 @@ def get_permutation_from_pos(pos):
         colIndex = col + 1
     
     return find_it, rowIndex, colIndex
+
+def get_batches(objs, batch):
+    if len(objs) == 0:
+        return None
+    batches = []
+    temp = []
+    for i in range(len(objs)):
+        if i % batch < batch:
+            temp.append(objs[i])
+
+        if i % batch == (batch - 1):
+            batches.append(temp)
+            temp = []
+
+    if temp != []:
+        batches.append(temp)
+        
+
+    return batches
+            
+def get_batches_by_lib(objs, batch_size):
+    return batched(objs, batch_size)

@@ -2,8 +2,10 @@
 import pygame
 
 from scripts.cards import Generator
-from scripts.constants import EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH 
+from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
+        EDITOR_CARDS_SELECTED, MAX_CARD_AMOUNT) 
 from scripts.utils import draw_grids, draw_panel, draw_selection_zone
+from scripts.utils import get_batches_by_lib, over_card
 
 pygame.display.set_caption('Map Editor')
 
@@ -20,9 +22,28 @@ class Editor:
         self.scroll = 0
         self.scrolls = [False, False] # [left, right]
         self.scroll_speed = 1
-        self.card_generator = Generator()
-        self.card_generator.make_cards(None)
+        self.cards_batch = 0
+        self.cards_to_show = []
+        self.card_box = [0] * MAX_CARD_AMOUNT
+        self.card_generator = Generator(mode='editor')
+        self.cards = []
+        self._make_cards()
 
+    def _make_cards(self):
+        cards = self.card_generator.make_cards(None, placement='editor')
+        shows = get_batches_by_lib(cards, EDITOR_CARDS_SELECTED)
+        for batch in shows:
+            self.cards_to_show.append(batch) 
+
+    def place_card_by_order(self, name):
+        card = self.card_generator.get_card_in_box(name)
+        if card != None:
+            self.cards.append(card)
+
+    def _draw_cards(self):
+        for card in self.cards:
+            card.draw(self.screen)
+                
     def update(self):
         if self.scrolls[0] and self.scroll > 0:
             self.scroll -= self.scroll_speed * 5
@@ -34,6 +55,33 @@ class Editor:
         draw_grids(self.screen, mode='editor', scroll=self.scroll)
         draw_panel(self.screen)
         draw_selection_zone(self.screen)
+        self._draw_cards()
+
+        self._draw_cards_to_select()
+
+    def _draw_cards_to_select(self):
+        for card in self.cards_to_show[self.cards_batch]:
+            card.draw(self.screen)
+
+    def _select_card(self, pos):
+        cards = self.cards_to_show[self.cards_batch]
+        selected = None
+        for card in cards:
+            if over_card(card, pos):
+                selected = card.name
+                break
+        return selected
+
+    def handle_mousebutton(self, left, right):
+        pos = pygame.mouse.get_pos()
+        if left:
+            selected = self._select_card(pos)
+            if selected != None:
+                self.place_card_by_order(selected)    
+
+        elif right:
+            print('right')
+
 
     def loop(self):
         run = True
@@ -55,6 +103,20 @@ class Editor:
                         self.scrolls[0] = False
                     if event.key == pygame.K_RIGHT:
                         self.scrolls[1] = False
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.handle_mousebutton(True, False)
+
+                    if event.button == 3:
+                        self.handle_mousebutton(False, True)
+
+                    if event.button == 4:
+                        if self.cards_batch >= 1:
+                            self.cards_batch -= 1
+                    if event.button == 5:
+                        if self.cards_batch < len(self.cards_to_show) - 1:
+                            self.cards_batch += 1
 
             self.update()
             self.draw()

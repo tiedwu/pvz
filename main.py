@@ -35,7 +35,7 @@ class Game:
         self.seedpacket.seeds = seeds_by_map(map)
 
     def _make_cards(self):
-        return self.card_generator.make_cards(self.map)
+        return self.card_generator.make_cards(self.map, placement='box')
 
     def _create_mowers(self):
         mowers = []
