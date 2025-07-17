@@ -6,12 +6,8 @@ from scripts.constants import (CARD_WIDTH, CARD_HEIGHT, ENERGY_SPACE, \
 from scripts.utils import make_card_image, get_plants, cards_by_map, plants_by_id
 
 class Generator:
-    def __init__(self, mode='game'):
-        if mode == 'game':
-            self.occupied = [0] * MAX_CARD_AMOUNT
-        elif mode == 'editor':
-            self.occupied = [0] * EDITOR_CARDS_SELECTED
-        self.mode = mode
+    def __init__(self):
+        self.occupied = [0] * MAX_CARD_AMOUNT
 
     def get_occupies(self):
         return self.occupied

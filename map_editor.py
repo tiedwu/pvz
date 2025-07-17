@@ -5,7 +5,8 @@ from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
         EDITOR_CARDS_SELECTED, MAX_CARD_AMOUNT) 
 from scripts.utils import draw_grids, draw_panel, draw_selection_zone
-from scripts.utils import get_batches_by_lib, over_card
+from scripts.utils import get_batches_by_lib, over_card, over_card_selection
+from scripts.utils import draw_zombie_selection_zone
 
 pygame.display.set_caption('Map Editor')
 
@@ -22,10 +23,12 @@ class Editor:
         self.scroll = 0
         self.scrolls = [False, False] # [left, right]
         self.scroll_speed = 1
+        self.zombies_batch = 0
         self.cards_batch = 0
         self.cards_to_show = []
+        self.zombies_to_show = []
         self.card_box = [0] * MAX_CARD_AMOUNT
-        self.card_generator = Generator(mode='editor')
+        self.card_generator = Generator()
         self.cards = []
         self._make_cards()
 
@@ -55,6 +58,7 @@ class Editor:
         draw_grids(self.screen, mode='editor', scroll=self.scroll)
         draw_panel(self.screen)
         draw_selection_zone(self.screen)
+        draw_zombie_selection_zone(self.screen)
         self._draw_cards()
 
         self._draw_cards_to_select()
@@ -112,10 +116,11 @@ class Editor:
                         self.handle_mousebutton(False, True)
 
                     if event.button == 4:
-                        if self.cards_batch >= 1:
+                        if self.cards_batch >= 1 and over_card_selection(pygame.mouse.get_pos()):
                             self.cards_batch -= 1
                     if event.button == 5:
-                        if self.cards_batch < len(self.cards_to_show) - 1:
+                        if self.cards_batch < len(self.cards_to_show) - 1 and \
+                                over_card_selection(pygame.mouse.get_pos()):
                             self.cards_batch += 1
 
             self.update()

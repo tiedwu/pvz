@@ -3,7 +3,7 @@ import pygame
 
 from scripts.entities import Entity
 from scripts.constants import ZOMBIES_APPEARS, DAMAGE_ZOMBIES, SCREEN_WIDTH, SCREEN_HEIGHT
-from scripts.utils import make_object_images, shootable_zombies, hitable_zombies
+from scripts.utils import make_object_images, shootable_zombies, hitable_zombies, get_zombies
 from scripts.projectiles import Zombie_2_Bullet
 
 class ZombieGenerator:
@@ -19,22 +19,27 @@ class ZombieGenerator:
         choices = [key for key in self.ZOMBIES_APPEARS[self.map].keys()]
         weights = self.ZOMBIES_APPEARS['map0'].values()
         choosed = random.choices(population=choices, weights=weights)
-        if choosed[0] == 'zombie_1':
-            zombie = Zombie_1(permutation)
-        elif choosed[0] == 'zombie_2':
-            zombie = Zombie_2(permutation)
+        if choosed[0] == 'Zombie':
+            zombie = Zombie(permutation)
+        elif choosed[0] == 'PeaZombie':
+            zombie = PeaZombie(permutation)
 
         return zombie
 
-class Zombie(Entity):
-    def __init__(self, permutation, images=make_object_images('zombie')):
-        super().__init__(None, permutation, images)
+class AbstractZombie(Entity):
+    def __init__(self, permutation):
+        super().__init__(None, permutation, images=get_zombies()[self.NAME]['images'])
         self.live = True
         self.max_hp = self.hp = 100
         self.hp = 80
         self.projectiles = []
         self.shoot_count = 0
         self.attack_count = 0
+
+        # zombies properties
+        self.velocity = self.VEL
+        self.animation_duration = self.ANIMATION_DURATION
+        self.name = self.NAME
 
     def get_velocity(self):
         return self.velocity
@@ -76,7 +81,7 @@ class Zombie(Entity):
                 self.frame = 0
 
     def _bullet(self):
-        if self.name == 'Zombie_2':
+        if self.name == 'PeaZombie':
             bullet = Zombie_2_Bullet((self.rect.x, self.rect.y), None, self.name)
         self.projectiles.append(bullet)
 
@@ -140,32 +145,21 @@ class Zombie(Entity):
         for projectile in self.projectiles:
             projectile.stop()
 
-class Zombie_1(Zombie):
-    #IMAGES = {'idle': make_walk_images('zombie', 1), 'walk': make_walk_images('zombie', 1)}
-    IMAGES = make_object_images('zombie', 1)
+class Zombie(AbstractZombie):
     VEL = [-1, 0]
     ANIMATION_DURATION = 1 * 60
-    NAME = 'Zombie_1'
+    NAME = 'Zombie'
     ATTACK_COUNT = 1 * 60
     def __init__(self, permutation):
-        super().__init__(permutation, images=self.IMAGES)
-        self.velocity = self.VEL
-        self.animation_duration = self.ANIMATION_DURATION
-        self.name = self.NAME
+        super().__init__(permutation)
 
-class Zombie_2(Zombie):
-    #IMAGES = {'idle': [make_object_image('zombie', 2)]}
-    #IMAGES = {'idle': make_walk_images('zombie', 2), 'walk': make_walk_images('zombie', 2)}
-    IMAGES = make_object_images('zombie', 2)
+class PeaZombie(AbstractZombie):
     VEL = [-1, 0]
     ANIMATION_DURATION = 1 * 60
-    NAME = 'Zombie_2'
+    NAME = 'PeaZombie'
     SHOOT_DURATION = 2 * 60
     def __init__(self, permutation):
-        super().__init__(permutation, images=self.IMAGES)
-        self.velocity = self.VEL
-        self.animation_duration = self.ANIMATION_DURATION
-        self.name = self.NAME
+        super().__init__(permutation)
         self.shoot_duration = self.SHOOT_DURATION
 
 

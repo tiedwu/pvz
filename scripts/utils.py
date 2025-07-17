@@ -7,7 +7,7 @@ from itertools import batched
 
 pygame.font.init()
 OBJECT_FONT = pygame.font.SysFont('comicsans', 30)
-COST_FONT = pygame.font.SysFont('comicsans', 10)
+COST_FONT = pygame.font.SysFont('comicsans', 20)
 ASTERISK_FONT = pygame.font.SysFont('comicsans', 60)
 SEED_FONT = pygame.font.SysFont('comicsans', 20)
 GAMEOVER_FONT = pygame.font.SysFont('comicsans', 100)
@@ -41,10 +41,32 @@ def get_plants():
     
     return plants
 
+def get_zombies():
+    zombies = {"Zombie": {'id': 0, 'images': make_object_images('zombie', 1)}, 
+               "PeaZombie": {'id': 1, 'images': make_object_images('zombie', 2)},
+               "BucketheadZombie": {'id': 2, 'images': make_object_images('zombie', 3)},
+               "ConeheadZombie": {'id': 3, 'images': make_object_images('zombie', 4)},
+               "FlagZombie": {'id': 4, 'images': make_object_images('zombie', 5)},
+               "NewspaperZombie": {'id': 5, 'images': make_object_images('zombie', 6)},
+               }
+    return zombies
+
 def plants_by_id():
-    f = lambda x: get_plants()[x]['id']
-    plants = get_plants().keys()
-    return (sorted([x for x in plants], key=f, reverse=False))
+    return order_by_id('plants')
+
+def zombies_by_id():
+    return order_by_id('zombies')
+
+def order_by_id(family):
+    if family == 'plants':
+        f = get_plants
+    elif family == 'zombies':
+        f = get_zombies
+        
+    g = lambda x: f()[x]['id']
+    keys = f().keys()
+    return (sorted([x for x in keys], key=g, reverse=False))
+        
 
 def shootable_plants():
     shootable = ['PeaShooter']
@@ -58,11 +80,11 @@ def seed_producing_plants():
     return ['SunFlower']
 
 def shootable_zombies():
-    shootable = ['Zombie_2']
+    shootable = ['PeaZombie']
     return shootable
 
 def hitable_zombies():
-    hitable = ['Zombie_1']
+    hitable = ['Zombie']
     return hitable
 
 def cards_by_map(map):
@@ -116,10 +138,10 @@ def draw_grids(display, mode='game', scroll=0):
             display.blit(font_img, (x, y))
 
 def draw_selection_zone(display):
-    x = ENERGY_SPACE + CARD_WIDTH * MAX_CARD_AMOUNT + 100
-    width = CARD_WIDTH * EDITOR_CARDS_SELECTED 
-    pygame.draw.rect(display, GRASS_COLOR, (x, 0, width, ROAD_GRID_SIZE))
+    pygame.draw.rect(display, GRASS_COLOR, CARD_SELECTION_RECT)
 
+def draw_zombie_selection_zone(display):
+    pygame.draw.rect(display, GRASS_COLOR, ZOMBIE_SELECTION_RECT)
 
 def draw_panel(display):
     pygame.draw.rect(display, GROUND_COLOR, (SCREEN_WIDTH + 10, 0, SELECT_ZONE - 10, SCREEN_HEIGHT))
@@ -296,13 +318,26 @@ def make_plant_image(name, width, height):
     return image
 
 def make_card_image(width, height, name, cost):
-    surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
-    image = make_plant_image(name, width * 0.8, height * 0.8)
-    surface.blit(image, (10, 10))
+    surface = _make_card_images('plants', name, width, height)
     text = COST_FONT.render(str(cost), 1, (0, 0, 0))
     surface.blit(text, (width * 0.8 - text.get_width() + 10, \
             height * 0.8 - text.get_height() + 10))
     
+    return surface
+
+def make_zombie_card_image(width, height, name):
+    return _make_card_image('zombies', name, width, height)
+
+# cards (plant card and zombie card)
+def _make_card_images(family, name, width, height):
+    surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+    if family == 'zombies':
+        objs = get_zombies()
+    elif family == 'plants':
+        objs = get_plants()
+    image = objs[name]['images']['idle'][0]
+    image = pygame.transform.scale(image, (width * 0.8, height * 0.8))
+    surface.blit(image, (10, 10))
     return surface
 
 def over_card(card, pos):
@@ -310,8 +345,10 @@ def over_card(card, pos):
         return True
     return False
 
-
-
+def over_card_selection(pos):
+    if CARD_SELECTION_RECT.collidepoint(pos):
+        return True
+    return False
 
 # index begin from 1..N
 def get_pos_from_permutation(obj, permutation):
