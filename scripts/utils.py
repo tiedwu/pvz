@@ -138,9 +138,7 @@ def draw_grids(display, mode='game', scroll=0):
             display.blit(font_img, (x, y))
 
 def draw_selection_zone(display):
-    pygame.draw.rect(display, GRASS_COLOR, CARD_SELECTION_RECT)
-
-def draw_zombie_selection_zone(display):
+    pygame.draw.rect(display, GRASS_COLOR, PLANT_SELECTION_RECT)
     pygame.draw.rect(display, GRASS_COLOR, ZOMBIE_SELECTION_RECT)
 
 def draw_panel(display):
@@ -311,14 +309,21 @@ def make_mower_images(i):
     images['walk'] = images['idle']
     return images
 
-def make_plant_image(name, width, height):
-    plants = get_plants()
-    image = plants[name]['images']['idle'][0]
-    image = pygame.transform.scale(image, (width, height))
-    return image
+#def make_plant_image(name, width, height):
+#    plants = get_plants()
+#    image = plants[name]['images']['idle'][0]
+#    image = pygame.transform.scale(image, (width, height))
+#    return image
 
-def make_card_image(width, height, name, cost):
-    surface = _make_card_images('plants', name, width, height)
+def make_card_image(card_type, width, height, name, cost):
+    if card_type == 'plants':
+        return make_plant_card_image(width, height, name, cost)
+    elif card_type == 'zombies':
+        return make_zombie_card_image(width, height, name) 
+
+
+def make_plant_card_image(width, height, name, cost):
+    surface = _make_card_image('plants', name, width, height)
     text = COST_FONT.render(str(cost), 1, (0, 0, 0))
     surface.blit(text, (width * 0.8 - text.get_width() + 10, \
             height * 0.8 - text.get_height() + 10))
@@ -329,7 +334,7 @@ def make_zombie_card_image(width, height, name):
     return _make_card_image('zombies', name, width, height)
 
 # cards (plant card and zombie card)
-def _make_card_images(family, name, width, height):
+def _make_card_image(family, name, width, height):
     surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
     if family == 'zombies':
         objs = get_zombies()
@@ -345,8 +350,8 @@ def over_card(card, pos):
         return True
     return False
 
-def over_card_selection(pos):
-    if CARD_SELECTION_RECT.collidepoint(pos):
+def over_plant_selection(pos):
+    if PLANT_SELECTION_RECT.collidepoint(pos):
         return True
     return False
 
@@ -375,24 +380,18 @@ def get_permutation_from_pos(pos):
     
     return find_it, rowIndex, colIndex
 
-def get_batches(objs, batch):
-    if len(objs) == 0:
-        return None
-    batches = []
-    temp = []
-    for i in range(len(objs)):
-        if i % batch < batch:
-            temp.append(objs[i])
+def get_card_batches(plants, zombies):
+    #plants = plants_by_id()
+    #zombies = zombies_by_id()
+    
+    return get_plant_batches(plants), get_zombie_batches(zombies)
 
-        if i % batch == (batch - 1):
-            batches.append(temp)
-            temp = []
 
-    if temp != []:
-        batches.append(temp)
-        
-
-    return batches
-            
-def get_batches_by_lib(objs, batch_size):
+def get_batches(objs, batch_size):
     return batched(objs, batch_size)
+
+def get_plant_batches(objs):
+    return get_batches(objs, PLANT_SELECTION_BATCH)
+
+def get_zombie_batches(objs):
+    return get_batches(objs, ZOMBIE_SELECTION_BATCH)

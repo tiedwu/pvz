@@ -3,10 +3,9 @@ import pygame
 
 from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
-        EDITOR_CARDS_SELECTED, MAX_CARD_AMOUNT) 
+        PLANT_SELECTION_BATCH, MAX_CARD_AMOUNT) 
 from scripts.utils import draw_grids, draw_panel, draw_selection_zone
-from scripts.utils import get_batches_by_lib, over_card, over_card_selection
-from scripts.utils import draw_zombie_selection_zone
+from scripts.utils import get_card_batches, over_card, over_plant_selection
 
 pygame.display.set_caption('Map Editor')
 
@@ -24,27 +23,37 @@ class Editor:
         self.scrolls = [False, False] # [left, right]
         self.scroll_speed = 1
         self.zombies_batch = 0
-        self.cards_batch = 0
-        self.cards_to_show = []
+        self.plants_batch = 0
+        self.plants_to_show = []
         self.zombies_to_show = []
         self.card_box = [0] * MAX_CARD_AMOUNT
         self.card_generator = Generator()
-        self.cards = []
+        self.plant_cards = []
+
+        # [['PeaZombie', (2, 2)], []]
+        self.zombie_cards = []
         self._make_cards()
 
     def _make_cards(self):
-        cards = self.card_generator.make_cards(None, placement='editor')
-        shows = get_batches_by_lib(cards, EDITOR_CARDS_SELECTED)
-        for batch in shows:
-            self.cards_to_show.append(batch) 
+        plant_cards, zombie_cards = self.card_generator.get_cards()
+        
+        plant_shows, zombie_shows = get_card_batches(plant_cards, zombie_cards)
+        #plant_shows = get_batches_by_lib(plant_cards, PLANT_SELECTION_BATCH)
+        for batch in plant_shows:
+            self.plants_to_show.append(batch)
+
+        for batch in zombie_shows:
+            self.zombies_to_show.append(batch)
+
+        
 
     def place_card_by_order(self, name):
         card = self.card_generator.get_card_in_box(name)
         if card != None:
-            self.cards.append(card)
+            self.plant_cards.append(card)
 
     def _draw_cards(self):
-        for card in self.cards:
+        for card in self.plant_cards:
             card.draw(self.screen)
                 
     def update(self):
@@ -58,17 +67,20 @@ class Editor:
         draw_grids(self.screen, mode='editor', scroll=self.scroll)
         draw_panel(self.screen)
         draw_selection_zone(self.screen)
-        draw_zombie_selection_zone(self.screen)
+        #draw_zombie_selection_zone(self.screen)
         self._draw_cards()
 
         self._draw_cards_to_select()
 
     def _draw_cards_to_select(self):
-        for card in self.cards_to_show[self.cards_batch]:
+        for card in self.plants_to_show[self.plants_batch]:
+            card.draw(self.screen)
+
+        for card in self.zombies_to_show[self.zombies_batch]:
             card.draw(self.screen)
 
     def _select_card(self, pos):
-        cards = self.cards_to_show[self.cards_batch]
+        cards = self.plants_to_show[self.plants_batch]
         selected = None
         for card in cards:
             if over_card(card, pos):
@@ -116,12 +128,12 @@ class Editor:
                         self.handle_mousebutton(False, True)
 
                     if event.button == 4:
-                        if self.cards_batch >= 1 and over_card_selection(pygame.mouse.get_pos()):
-                            self.cards_batch -= 1
+                        if self.plants_batch >= 1 and over_plant_selection(pygame.mouse.get_pos()):
+                            self.plants_batch -= 1
                     if event.button == 5:
-                        if self.cards_batch < len(self.cards_to_show) - 1 and \
-                                over_card_selection(pygame.mouse.get_pos()):
-                            self.cards_batch += 1
+                        if self.plants_batch < len(self.plants_to_show) - 1 and \
+                                over_plant_selection(pygame.mouse.get_pos()):
+                            self.plants_batch += 1
 
             self.update()
             self.draw()
