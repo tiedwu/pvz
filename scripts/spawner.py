@@ -60,6 +60,7 @@ class Spawner:
                     sprite = PeaShooter(permutation)
                 #print(sprite)
                 self.exists[permutation] = sprite
+                self.occupied[permutation] = 1
                 self.group.add(sprite)
                 break
             tried += 1

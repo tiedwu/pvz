@@ -139,7 +139,7 @@ def draw_grids(display, mode='game', scroll=0):
 
 def draw_selection_zone(display):
     pygame.draw.rect(display, GRASS_COLOR, PLANT_SELECTION_RECT)
-    pygame.draw.rect(display, GRASS_COLOR, ZOMBIE_SELECTION_RECT)
+    pygame.draw.rect(display, ZOMBIE_SELECTION_BG_COLOR, ZOMBIE_SELECTION_RECT)
 
 def draw_panel(display):
     pygame.draw.rect(display, GROUND_COLOR, (SCREEN_WIDTH + 10, 0, SELECT_ZONE - 10, SCREEN_HEIGHT))
@@ -309,12 +309,6 @@ def make_mower_images(i):
     images['walk'] = images['idle']
     return images
 
-#def make_plant_image(name, width, height):
-#    plants = get_plants()
-#    image = plants[name]['images']['idle'][0]
-#    image = pygame.transform.scale(image, (width, height))
-#    return image
-
 def make_card_image(card_type, width, height, name, cost):
     if card_type == 'plants':
         return make_plant_card_image(width, height, name, cost)
@@ -366,7 +360,8 @@ def get_permutation_from_pos(pos):
     find_it = False
     rowIndex, colIndex = -1, -1
     for row in range(ROAD_ROWS):
-        for col in range(ROAD_COLS):
+        #for col in range(ROAD_COLS):
+        for col in range(EDITOR_COLS):
             rect = pygame.Rect(MOWER_SPACE + col * ROAD_GRID_SIZE, ROAD_GRID_SIZE + row * ROAD_GRID_SIZE \
                                , ROAD_GRID_SIZE, ROAD_GRID_SIZE)
             if rect.collidepoint(pos):
@@ -380,10 +375,13 @@ def get_permutation_from_pos(pos):
     
     return find_it, rowIndex, colIndex
 
+def place_zombie_card(exists, obj_name, pos):
+    _, row, col = get_permutation_from_pos(pos)
+    print(row, col)
+    exists[(row, col)] = obj_name
+    return exists
+
 def get_card_batches(plants, zombies):
-    #plants = plants_by_id()
-    #zombies = zombies_by_id()
-    
     return get_plant_batches(plants), get_zombie_batches(zombies)
 
 

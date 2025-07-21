@@ -4,7 +4,7 @@ import pygame
 from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
         PLANT_SELECTION_BATCH, MAX_CARD_AMOUNT) 
-from scripts.utils import draw_grids, draw_panel, draw_selection_zone
+from scripts.utils import draw_grids, draw_panel, draw_selection_zone, place_zombie_card
 from scripts.utils import get_card_batches, over_card, over_plant_selection
 
 pygame.display.set_caption('Map Editor')
@@ -32,6 +32,8 @@ class Editor:
 
         # [['PeaZombie', (2, 2)], []]
         self.zombie_cards = []
+        self.zombie_card_info = {}
+        self.zombie_card_selected = None
         self._make_cards()
 
     def _make_cards(self):
@@ -55,6 +57,9 @@ class Editor:
     def _draw_cards(self):
         for card in self.plant_cards:
             card.draw(self.screen)
+
+        #for card in self.zombie_cards:
+        #    card.draw(self.screen)
                 
     def update(self):
         if self.scrolls[0] and self.scroll > 0:
@@ -84,16 +89,37 @@ class Editor:
         selected = None
         for card in cards:
             if over_card(card, pos):
-                selected = card.name
+                selected = card
                 break
+        if not selected:
+            cards = self.zombies_to_show[self.zombies_batch]
+            for card in cards:
+                if over_card(card, pos):
+                    selected = card
+                    break
         return selected
 
+        
     def handle_mousebutton(self, left, right):
         pos = pygame.mouse.get_pos()
         if left:
+            if not self.zombie_card_selected:
+                selected = self._select_card(pos)
+                if selected.family == 'zombies':
+                    self.zombie_card_selected = selected.name
+            else:
+                print(self.zombie_card_selected)
+                #self.place_zombie_card(pos)
+                self.zombie_card_info = place_zombie_card(self.zombie_card_info, self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
+                self.zombie_card_selected = None
+                print(self.zombie_card_info)
+            
+            # plant_card
             selected = self._select_card(pos)
             if selected != None:
-                self.place_card_by_order(selected)    
+                if selected.family == 'plants':
+                    self.place_card_by_order(selected.name)    
+                
 
         elif right:
             print('right')
