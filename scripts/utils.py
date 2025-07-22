@@ -349,12 +349,18 @@ def over_plant_selection(pos):
         return True
     return False
 
+def over_map_screen(pos):
+    if MAP_SCREEN_RECT.collidepoint(pos):
+        return True
+    return False
+
 # index begin from 1..N
 def get_pos_from_permutation(obj, permutation):
     row, col = permutation
     x = MOWER_SPACE + (col - 1) * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_width() // 2)
     y = CARD_HEIGHT + (row - 1) * ROAD_GRID_SIZE + (ROAD_GRID_SIZE // 2 - obj.get_height() // 2)
     return x, y
+
 
 def get_permutation_from_pos(pos):
     find_it = False
@@ -377,7 +383,6 @@ def get_permutation_from_pos(pos):
 
 def place_zombie_card(exists, obj_name, pos):
     _, row, col = get_permutation_from_pos(pos)
-    print(row, col)
     exists[(row, col)] = obj_name
     return exists
 

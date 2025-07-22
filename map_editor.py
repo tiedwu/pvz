@@ -5,7 +5,7 @@ from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
         PLANT_SELECTION_BATCH, MAX_CARD_AMOUNT) 
 from scripts.utils import draw_grids, draw_panel, draw_selection_zone, place_zombie_card
-from scripts.utils import get_card_batches, over_card, over_plant_selection
+from scripts.utils import get_card_batches, over_card, over_plant_selection, over_map_screen
 
 pygame.display.set_caption('Map Editor')
 
@@ -26,17 +26,19 @@ class Editor:
         self.plants_batch = 0
         self.plants_to_show = []
         self.zombies_to_show = []
-        self.card_box = [0] * MAX_CARD_AMOUNT
+        #self.card_box = [0] * MAX_CARD_AMOUNT
         self.card_generator = Generator()
-        self.plant_cards = []
+        #self.plant_card_box = self.card_generator.occupied
+        #self.plant_cards = []
 
         # [['PeaZombie', (2, 2)], []]
-        self.zombie_cards = []
+        #self.zombie_cards = []
         self.zombie_card_info = {}
+        self.plant_card_info = {}
         self.zombie_card_selected = None
-        self._make_cards()
+        self._show_cards()
 
-    def _make_cards(self):
+    def _show_cards(self):
         plant_cards, zombie_cards = self.card_generator.get_cards()
         
         plant_shows, zombie_shows = get_card_batches(plant_cards, zombie_cards)
@@ -47,19 +49,18 @@ class Editor:
         for batch in zombie_shows:
             self.zombies_to_show.append(batch)
 
-        
 
     def place_card_by_order(self, name):
-        card = self.card_generator.get_card_in_box(name)
-        if card != None:
-            self.plant_cards.append(card)
+        index, card = self.card_generator.get_card_in_box(name)
+        if card != None and index != -1:
+            self.plant_card_info[index] = card
 
     def _draw_cards(self):
-        for card in self.plant_cards:
+        for _, card in self.plant_card_info.items():
             card.draw(self.screen)
 
-        #for card in self.zombie_cards:
-        #    card.draw(self.screen)
+        for card in self.zombie_card_info.values():
+            card.draw(self.screen, self.scroll)
                 
     def update(self):
         if self.scrolls[0] and self.scroll > 0:
@@ -84,7 +85,7 @@ class Editor:
         for card in self.zombies_to_show[self.zombies_batch]:
             card.draw(self.screen)
 
-    def _select_card(self, pos):
+    def _select_card_on_zone(self, pos):
         cards = self.plants_to_show[self.plants_batch]
         selected = None
         for card in cards:
@@ -99,30 +100,48 @@ class Editor:
                     break
         return selected
 
+    def _remove_card_on_map(self, pos):
+        
+        # plants
+        for index, card in self.plant_card_info.items():
+            if over_card(card, pos):
+                del self.plant_card_info[index]
+                self.card_generator.remove_card(index)
+                break
+
+        # zombies
+        for permutation, card in self.zombie_card_info.items():
+            if over_card(card, (pos[0] + self.scroll, pos[1])):
+                del self.zombie_card_info[permutation]
+                break
+
+
+
         
     def handle_mousebutton(self, left, right):
         pos = pygame.mouse.get_pos()
         if left:
             if not self.zombie_card_selected:
-                selected = self._select_card(pos)
-                if selected.family == 'zombies':
-                    self.zombie_card_selected = selected.name
+                selected = self._select_card_on_zone(pos)
+                if selected != None:
+                    if selected.family == 'zombies':
+                        self.zombie_card_selected = selected.name
             else:
-                print(self.zombie_card_selected)
-                #self.place_zombie_card(pos)
-                self.zombie_card_info = place_zombie_card(self.zombie_card_info, self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
-                self.zombie_card_selected = None
-                print(self.zombie_card_info)
+                if over_map_screen(pos):
+                    permutation, card = self.card_generator.make_zombie_card(self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
+                    self.zombie_card_info[permutation] = card
+                    self.zombie_card_selected = None
             
             # plant_card
-            selected = self._select_card(pos)
+            selected = self._select_card_on_zone(pos)
             if selected != None:
                 if selected.family == 'plants':
                     self.place_card_by_order(selected.name)    
                 
 
         elif right:
-            print('right')
+            self._remove_card_on_map(pos)
+
 
 
     def loop(self):

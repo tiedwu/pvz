@@ -3,7 +3,8 @@ import pygame
 
 from scripts.constants import (CARD_WIDTH, CARD_HEIGHT, ENERGY_SPACE, \
         MAX_CARD_AMOUNT, PLANT_SELECTION_BATCH, PLANT_SELECTION_X, ZOMBIE_SELECTION_X, ZOMBIE_SELECTION_COLS)
-from scripts.utils import make_card_image, get_plants, get_zombies, cards_by_map, plants_by_id, zombies_by_id
+from scripts.utils import (make_card_image, get_plants, get_zombies, cards_by_map, plants_by_id, \
+        zombies_by_id, get_pos_from_permutation, get_permutation_from_pos)
 
 class Generator:
     def __init__(self):
@@ -58,26 +59,31 @@ class Generator:
         return self._get_card(card, placement='box')
 
     def _get_card(self, name=None, placement='box'):
-        if not name:
+        card = None
+        card_type = 'plants'
+
+
+        if name:
+            cost = get_plants()[name]['cost']
+        else:
             name, cost = self._take_card()
 
-        if placement == 'box':
-            place = self._get_place()
-            card_type = 'plants'
-            cost = get_plants()[name]['cost']
-            if place == -1:
-                return None
+        place = self._get_place()
 
+        if place != -1:
             x = ENERGY_SPACE + place * CARD_WIDTH
             pos = (x, 0)
+                
+            card = Card(pos, name, card_type, cost)
 
-        return Card(pos, name, card_type, cost)
+        return place, card
 
     def make_cards_by_map(self, map):
         choices = []
         cards = cards_by_map(map)
         for card in cards:
-            choices.append(self._get_card(card, placement='box'))
+            _, got = self._get_card(card)
+            choices.append(got)
         return choices
 
     def _take_card(self):
@@ -94,6 +100,22 @@ class Generator:
                 return index
         return -1
 
+    def remove_card(self, index):
+        self.occupied[index] = 0
+
+    def get_zombie_card(self, name, permutation):
+        card = Card((0, 0), name, 'zombies', 0)
+        card.set_pos(get_pos_from_permutation(card, permutation))
+        return card
+        #return Card(get_pos_from_permutation(permutation), name, 'zombies', 0)
+
+    def make_zombie_card(self, name, pos):
+        _, row, col = get_permutation_from_pos(pos)
+        permutation = (row, col)
+        card = self.get_zombie_card(name, permutation) 
+        return permutation, card
+
+
 class Card:
     WIDTH = CARD_WIDTH
     HEIGHT = CARD_HEIGHT
@@ -108,8 +130,18 @@ class Card:
     def get_id(self):
         return get_plants()[self.name]['id']
 
-    def draw(self, surf):
-        surf.blit(self.image, self.pos)
+    def draw(self, surf, scroll=0):
+        pos_x = self.pos[0] - scroll
+        surf.blit(self.image, (pos_x, self.pos[1]))
 
     def get_rect(self):
         return pygame.Rect(*self.pos, self.width, self.height)
+
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
+
+    def set_pos(self, pos):
+        self.pos = pos
