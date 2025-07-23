@@ -3,9 +3,11 @@ import pygame
 
 from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
-        PLANT_SELECTION_BATCH, MAX_CARD_AMOUNT) 
+        PLANT_SELECTION_BATCH, MAX_CARD_AMOUNT, SAVE_BUTTON_IMG, LOAD_BUTTON_IMG, \
+        LOAD_BUTTON_RECT, SAVE_BUTTON_RECT) 
 from scripts.utils import draw_grids, draw_panel, draw_selection_zone, place_zombie_card
 from scripts.utils import get_card_batches, over_card, over_plant_selection, over_map_screen
+from scripts.button import Button
 
 pygame.display.set_caption('Map Editor')
 
@@ -16,6 +18,8 @@ class Editor:
     def __init__(self):
         self.screen = pygame.display.set_mode(EDITOR_SCREEN_SIZE)
         self.map = 'map0'
+        self.load_button = Button(LOAD_BUTTON_RECT.x, LOAD_BUTTON_RECT.y, pygame.image.load(LOAD_BUTTON_IMG).convert_alpha(), 1)
+        self.save_button = Button(SAVE_BUTTON_RECT.x, SAVE_BUTTON_RECT.y, pygame.image.load(SAVE_BUTTON_IMG).convert_alpha(), 1)
         self.reset()
 
     def reset(self):
@@ -77,6 +81,12 @@ class Editor:
         self._draw_cards()
 
         self._draw_cards_to_select()
+
+        if self.load_button.draw(self.screen):
+            print('clicked')
+        if self.save_button.draw(self.screen):
+            print('clicked')
+
 
     def _draw_cards_to_select(self):
         for card in self.plants_to_show[self.plants_batch]:
