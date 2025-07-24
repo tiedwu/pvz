@@ -1,5 +1,6 @@
 
 import pygame
+import pickle
 
 from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
@@ -83,10 +84,41 @@ class Editor:
         self._draw_cards_to_select()
 
         if self.load_button.draw(self.screen):
-            print('clicked')
+            self.load()
+            
         if self.save_button.draw(self.screen):
-            print('clicked')
+            self.save()
 
+    def load(self):
+        print('load')
+        pickle_in = open(f'map_{self.map}', 'rb')
+        map_data = pickle.load(pickle_in)
+        print(map_data)
+
+        for pos, name in map_data['plant'].items():
+            self.plant_card_info[pos] = self.card_generator.make_card('plants', name, pos)
+
+        print(self.plant_card_info)
+
+    def save(self):
+        print(self.plant_card_info)
+        print(self.zombie_card_info)
+        plant_info = {}
+        for pos, card in self.plant_card_info.items():
+            plant_info[pos] = card.name
+
+        print(plant_info)
+        zombie_info = {}
+        for pos, card in self.zombie_card_info.items():
+            zombie_info[pos] = card.name
+        print(zombie_info)
+
+        map_data = {}
+        map_data['plant'] = plant_info
+        map_data['zombie'] = zombie_info
+        pickle_out = open(f'map_{self.map}', 'wb')
+        pickle.dump(map_data, pickle_out)
+        pickle_out.close()
 
     def _draw_cards_to_select(self):
         for card in self.plants_to_show[self.plants_batch]:

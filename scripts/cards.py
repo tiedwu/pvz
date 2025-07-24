@@ -115,6 +115,15 @@ class Generator:
         card = self.get_zombie_card(name, permutation) 
         return permutation, card
 
+    def make_card(self, family, name, pos):
+        if family == 'plants':
+            x = ENERGY_SPACE + pos * CARD_WIDTH
+            y = 0
+            cost = self.plant_info[name]['cost']
+            return Card((x, y), name, family, cost)
+        elif family == 'zombies':
+            pass 
+
 
 class Card:
     WIDTH = CARD_WIDTH
