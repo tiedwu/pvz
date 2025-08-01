@@ -1,6 +1,6 @@
 
 import pygame
-import pickle
+#import pickle
 
 from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
@@ -44,7 +44,8 @@ class Editor:
         self._show_cards()
 
     def _show_cards(self):
-        plant_cards, zombie_cards = self.card_generator.get_cards()
+        #plant_cards, zombie_cards = self.card_generator.get_cards()
+        plant_cards, zombie_cards = self.card_generator.make_cards_()
         
         plant_shows, zombie_shows = get_card_batches(plant_cards, zombie_cards)
         #plant_shows = get_batches_by_lib(plant_cards, PLANT_SELECTION_BATCH)
@@ -56,16 +57,20 @@ class Editor:
 
 
     def place_card_by_order(self, name):
-        index, card = self.card_generator.get_card_in_box(name)
-        if card != None and index != -1:
-            self.plant_card_info[index] = card
+        #index, card = self.card_generator.get_card_in_box(name)
+        self.card_generator.make_plant_card_(name)
+
+        #if card != None and index != -1:
+        #    self.plant_card_info[index] = card
 
     def _draw_cards(self):
         for _, card in self.plant_card_info.items():
-            card.draw(self.screen)
+            if card != None:
+                card.draw(self.screen)
 
-        for card in self.zombie_card_info.values():
-            card.draw(self.screen, self.scroll)
+        for _, card in self.zombie_card_info.items():
+            if card != None:
+                card.draw(self.screen, self.scroll)
                 
     def update(self):
         if self.scrolls[0] and self.scroll > 0:
@@ -73,6 +78,11 @@ class Editor:
 
         if self.scrolls[1] and self.scroll < (MAP_WIDTH - SCREEN_WIDTH):
             self.scroll += self.scroll_speed * 5
+
+        designate_objs = self.card_generator.designate()
+
+        self.plant_card_info = designate_objs['plants']
+        self.zombie_card_info = designate_objs['zombies']
 
     def draw(self):
         draw_grids(self.screen, mode='editor', scroll=self.scroll)
@@ -90,35 +100,10 @@ class Editor:
             self.save()
 
     def load(self):
-        print('load')
-        pickle_in = open(f'map_{self.map}', 'rb')
-        map_data = pickle.load(pickle_in)
-        print(map_data)
-
-        for pos, name in map_data['plant'].items():
-            self.plant_card_info[pos] = self.card_generator.make_card('plants', name, pos)
-
-        print(self.plant_card_info)
+        self.card_generator.load(self.map)
 
     def save(self):
-        print(self.plant_card_info)
-        print(self.zombie_card_info)
-        plant_info = {}
-        for pos, card in self.plant_card_info.items():
-            plant_info[pos] = card.name
-
-        print(plant_info)
-        zombie_info = {}
-        for pos, card in self.zombie_card_info.items():
-            zombie_info[pos] = card.name
-        print(zombie_info)
-
-        map_data = {}
-        map_data['plant'] = plant_info
-        map_data['zombie'] = zombie_info
-        pickle_out = open(f'map_{self.map}', 'wb')
-        pickle.dump(map_data, pickle_out)
-        pickle_out.close()
+        self.card_generator.save(self.map)
 
     def _draw_cards_to_select(self):
         for card in self.plants_to_show[self.plants_batch]:
@@ -146,15 +131,17 @@ class Editor:
         
         # plants
         for index, card in self.plant_card_info.items():
-            if over_card(card, pos):
-                del self.plant_card_info[index]
-                self.card_generator.remove_card(index)
-                break
+            if card != None:
+                if over_card(card, pos):
+                #del self.plant_card_info[index]
+                    self.card_generator.remove_card('plants', index)
+                    break
 
         # zombies
         for permutation, card in self.zombie_card_info.items():
             if over_card(card, (pos[0] + self.scroll, pos[1])):
-                del self.zombie_card_info[permutation]
+                #del self.zombie_card_info[permutation]
+                self.card_generator.remove_card('zombies', permutation)
                 break
 
 
@@ -170,9 +157,10 @@ class Editor:
                         self.zombie_card_selected = selected.name
             else:
                 if over_map_screen(pos):
-                    permutation, card = self.card_generator.make_zombie_card(self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
-                    self.zombie_card_info[permutation] = card
-                    self.zombie_card_selected = None
+                    #permutation, card = self.card_generator.make_zombie_card(self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
+                    self.card_generator.make_zombie_card_(self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
+                    #self.zombie_card_info[permutation] = card
+                    #self.zombie_card_selected = None
             
             # plant_card
             selected = self._select_card_on_zone(pos)
