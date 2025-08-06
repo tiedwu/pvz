@@ -164,7 +164,39 @@ class ThornyNut(Plant):
     def __init__(self, permutation):
         super().__init__(self.NAME, permutation)
 
+class CherryBomb(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    #NAME = type(self).__name__
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+        #super().__init__(self.NAME, permutation)
 
+class Chomper(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
 
+class HypnoShroom(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
 
+class IceShroom(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
 
+class Jalapeno(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__

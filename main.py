@@ -30,9 +30,22 @@ class Game:
         self.card_generator = Generator()
         # self.cards = []
         self.plant_taken = None
-        self.cards = self._make_cards()
+        self.load_map()
+        #self.cards = self._make_cards()
         self.card_selected = False
         self.seedpacket.seeds = seeds_by_map(map)
+
+    def load_map(self):
+        self.cards = []
+
+        self.card_generator.load(self.map)
+        self.card_objects = self.card_generator.designate() 
+        #print(self.objects)
+        self.cards = [x for x in self.card_objects['plants'].values()]
+        #print(self.cards)
+
+        self.objects = {}
+
 
     def _make_cards(self):
         return self.card_generator.make_cards_by_map(self.map)
@@ -154,7 +167,8 @@ class Game:
                 # check enough seeds to buy the plant
                 cost = get_plants()[self.plant_taken]['cost']
                 if self.seedpacket.seeds >= cost:
-                    if self.plants.make_plant(self.plant_taken, pos):
+                    #if self.plants.make_plant(self.plant_taken, pos):
+                    if self.plants.make_plant_(self.plant_taken, pos):
                         self.seedpacket.seeds -= cost
                         self.plant_taken = None
         self.card_selected = not self.card_selected

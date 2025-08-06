@@ -13,6 +13,8 @@ SEED_FONT = pygame.font.SysFont('comicsans', 20)
 GAMEOVER_FONT = pygame.font.SysFont('comicsans', 100)
 COLUMN_FONT = pygame.font.SysFont('comicsans', 10)
 
+MAP_ID_FONT = pygame.font.SysFont('comicsans', 30)
+
 
 def occupied_place(family='plant', occupied={}, pos=(0, 0)):
     if pos in occupied.keys():
@@ -141,6 +143,11 @@ def draw_selection_zone(display):
     pygame.draw.rect(display, GRASS_COLOR, PLANT_SELECTION_RECT)
     pygame.draw.rect(display, ZOMBIE_SELECTION_BG_COLOR, ZOMBIE_SELECTION_RECT)
 
+def draw_map_id(display, map):
+    font_image = make_font('mapid', map)
+    pos = (ZOMBIE_SELECTION_X, LOAD_BUTTON_Y + (LOAD_BUTTON_HEIGHT - font_image.get_height()) / 4)
+    display.blit(font_image, pos)
+
 def draw_panel(display):
     pygame.draw.rect(display, GROUND_COLOR, (SCREEN_WIDTH + 10, 0, SELECT_ZONE - 10, SCREEN_HEIGHT))
 
@@ -266,13 +273,16 @@ def make_circle(color, radius):
     pygame.draw.circle(surface, color, (radius, radius), radius)
     return surface
 
-def make_font(font='seed', value=0):
-    if font == 'seed':
+def make_font(name='seed', value=0):
+    if name == 'seed':
         font = SEED_FONT
         color = (9, 153, 214)
-    elif font == 'gameover':
+    elif name == 'gameover':
         font = GAMEOVER_FONT
         color = (255, 0, 0)
+    elif name == 'mapid':
+        font = MAP_ID_FONT
+        color = (255, 255, 255)
     font_image = font.render(str(value), 1, color)
     return font_image
 

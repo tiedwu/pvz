@@ -5,8 +5,8 @@ import pygame
 from scripts.cards import Generator
 from scripts.constants import (EDITOR_SCREEN_SIZE, MAP_WIDTH, SCREEN_WIDTH, \
         PLANT_SELECTION_BATCH, MAX_CARD_AMOUNT, SAVE_BUTTON_IMG, LOAD_BUTTON_IMG, \
-        LOAD_BUTTON_RECT, SAVE_BUTTON_RECT) 
-from scripts.utils import draw_grids, draw_panel, draw_selection_zone, place_zombie_card
+        LOAD_BUTTON_RECT, SAVE_BUTTON_RECT, MAPS) 
+from scripts.utils import draw_grids, draw_panel, draw_selection_zone, place_zombie_card, draw_map_id
 from scripts.utils import get_card_batches, over_card, over_plant_selection, over_map_screen
 from scripts.button import Button
 
@@ -18,7 +18,7 @@ class Editor:
 
     def __init__(self):
         self.screen = pygame.display.set_mode(EDITOR_SCREEN_SIZE)
-        self.map = 'map0'
+        self.map_index = 0
         self.load_button = Button(LOAD_BUTTON_RECT.x, LOAD_BUTTON_RECT.y, pygame.image.load(LOAD_BUTTON_IMG).convert_alpha(), 1)
         self.save_button = Button(SAVE_BUTTON_RECT.x, SAVE_BUTTON_RECT.y, pygame.image.load(SAVE_BUTTON_IMG).convert_alpha(), 1)
         self.reset()
@@ -57,11 +57,7 @@ class Editor:
 
 
     def place_card_by_order(self, name):
-        #index, card = self.card_generator.get_card_in_box(name)
         self.card_generator.make_plant_card_(name)
-
-        #if card != None and index != -1:
-        #    self.plant_card_info[index] = card
 
     def _draw_cards(self):
         for _, card in self.plant_card_info.items():
@@ -84,6 +80,11 @@ class Editor:
         self.plant_card_info = designate_objs['plants']
         self.zombie_card_info = designate_objs['zombies']
 
+
+    def _draw_map_id(self):
+        draw_map_id(self.screen, MAPS[self.map_index]) 
+
+
     def draw(self):
         draw_grids(self.screen, mode='editor', scroll=self.scroll)
         draw_panel(self.screen)
@@ -93,6 +94,9 @@ class Editor:
 
         self._draw_cards_to_select()
 
+        self._draw_map_id()
+
+
         if self.load_button.draw(self.screen):
             self.load()
             
@@ -100,10 +104,10 @@ class Editor:
             self.save()
 
     def load(self):
-        self.card_generator.load(self.map)
+        self.card_generator.load(MAPS[self.map_index])
 
     def save(self):
-        self.card_generator.save(self.map)
+        self.card_generator.save(MAPS[self.map_index])
 
     def _draw_cards_to_select(self):
         for card in self.plants_to_show[self.plants_batch]:
@@ -144,7 +148,17 @@ class Editor:
                 self.card_generator.remove_card('zombies', permutation)
                 break
 
+    def _select_map(self, selected):
+        if selected == 'prev':
+            if self.map_index !=  0:
+                self.map_index -= 1
 
+        elif selected == 'next':
+            if self.map_index == len(MAPS) - 1:
+                self.map_index = 0
+            else:
+                self.map_index += 1
+        
 
         
     def handle_mousebutton(self, left, right):
@@ -157,10 +171,7 @@ class Editor:
                         self.zombie_card_selected = selected.name
             else:
                 if over_map_screen(pos):
-                    #permutation, card = self.card_generator.make_zombie_card(self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
                     self.card_generator.make_zombie_card_(self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
-                    #self.zombie_card_info[permutation] = card
-                    #self.zombie_card_selected = None
             
             # plant_card
             selected = self._select_card_on_zone(pos)
@@ -194,6 +205,10 @@ class Editor:
                         self.scrolls[0] = False
                     if event.key == pygame.K_RIGHT:
                         self.scrolls[1] = False
+                    if event.key == pygame.K_UP:
+                        self._select_map('prev')
+                    if event.key == pygame.K_DOWN:
+                        self._select_map('next')
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:

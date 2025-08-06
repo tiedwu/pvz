@@ -9,7 +9,7 @@ from scripts.utils import (make_card_image, get_plants, get_zombies, cards_by_ma
 
 class Generator:
     def __init__(self):
-        self.occupied = [0] * MAX_CARD_AMOUNT
+        #self.occupied = [0] * MAX_CARD_AMOUNT
 
         # names oreder by id
         self.plant_info = get_plants()
@@ -17,12 +17,11 @@ class Generator:
         self.plants = plants_by_id() # list plants by ID
         self.zombies = zombies_by_id()
 
+        #self._designate = {'plants': self._reset_plants(), 'zombies': {}}
         self._designate = {'plants': self._reset_plants(), 'zombies': {}}
         
     def _reset_plants(self):
         plants = {}
-        for i in range(MAX_CARD_AMOUNT):
-            plants[i] = None
         return plants
 
 
@@ -46,15 +45,28 @@ class Generator:
     # place plant Card in empty slot
     def make_plant_card_(self, name):
         plants = self._designate['plants']
-        for place, obj in plants.items():
-            if obj == None:
-                x = ENERGY_SPACE + place * CARD_WIDTH
-                pos = (x, 0)
-                cost = self.plant_info[name]['cost']
-                card = Card(pos, name, 'plants', cost)
-                plants[place] = card
+        #insert = False
+
+        insert = False
+        for i in range(len(plants.keys())):
+            if plants[i] == None:
+                index = i
+                insert = True
                 break
 
+
+        if insert == False:
+            index = len(plants.keys())
+            if index == MAX_CARD_AMOUNT:
+                return
+
+
+        x = ENERGY_SPACE + index * CARD_WIDTH
+        pos = (x, 0)
+        cost = self.plant_info[name]['cost']
+        card = Card(pos, name, 'plants', cost)
+        plants[index] = card
+                
         self._designate['plants'] = plants
 
     # create Card by mouse pos
@@ -95,7 +107,8 @@ class Generator:
         return plant_cards, zombie_cards
 
     def load(self, map):
-        pickle_in = open(f'map_{map}', 'rb')
+        
+        pickle_in = open(f'maps/map_{map}', 'rb')
         map_data = pickle.load(pickle_in)
 
         self._parse(map_data)
@@ -114,7 +127,7 @@ class Generator:
         map_data = {}
         map_data['plant'] = plant_info
         map_data['zombie'] = zombie_info
-        pickle_out = open(f'map_{map}', 'wb')
+        pickle_out = open(f'maps/map_{map}', 'wb')
         pickle.dump(map_data, pickle_out)
         pickle_out.close()
 

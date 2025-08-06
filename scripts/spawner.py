@@ -4,7 +4,9 @@ import random
 from scripts.constants import ROAD_ROWS, ROAD_COLS, ZOMBIE_SPAWN_COL
 from scripts.zombies import ZombieGenerator
 
-from scripts.plants import PeaShooter, SunFlower, ThornyNut
+#from scripts.plants import PeaShooter, SunFlower, ThornyNut
+from scripts.plants import *
+
 from scripts.utils import get_permutation_from_pos, occupied_place
 
 
@@ -15,25 +17,47 @@ class Spawner:
         self.exists = {}
         self.group = pygame.sprite.Group()
         self.occupied = {}
+        self.occupied_ = {}
 
     def reset(self):
         self.group.clear()
         self.occupied = {}
+        self.occupied_ = {}
 
     def remove_plant(self, plant):
         self.group.remove(plant)
         _, row, col = get_permutation_from_pos(plant.pos)
         del self.occupied[(row, col)]
+        del self.occupied_[(row, col)]
+
+    def make_plant_(self, name, pos):
+        _, row, col = get_permutation_from_pos(pos)
+        permutation = (row, col)
+
+        success = False
+        if permutation not in self.occupied_.keys() and row != -1:
+            success = True
+            sprite = globals()[name](permutation)
+            self.group.add(sprite)
+            self.occupied_[permutation] = sprite
+
+        return success
+
 
     def make_plant(self, name, pos):
         found, row, col = get_permutation_from_pos(pos)
         permutation = (row, col)
-        if name == 'PeaShooter':
-            sprite = PeaShooter(permutation)
-        elif name == 'SunFlower':
-            sprite = SunFlower(permutation)
-        elif name == 'ThornyNut':
-            sprite = ThornyNut(permutation)
+        #if name == 'PeaShooter':
+        #    sprite = PeaShooter(permutation)
+        #elif name == 'SunFlower':
+        #    sprite = SunFlower(permutation)
+        #elif name == 'ThornyNut':
+        #    sprite = ThornyNut(permutation)
+        #elif name == 'CherryBomb':
+        #    sprite = CherryBomb(permutation)
+        #elif name == 'Chomper':
+        #    sprite == Chomper(permutation)
+        sprite = globals()[name](permutation)
         
         if not occupied_place(occupied=self.occupied, pos=permutation) and row != -1:
             self.group.add(sprite)
