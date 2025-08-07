@@ -27,7 +27,7 @@ class Spawner:
     def remove_plant(self, plant):
         self.group.remove(plant)
         _, row, col = get_permutation_from_pos(plant.pos)
-        del self.occupied[(row, col)]
+        #del self.occupied[(row, col)]
         del self.occupied_[(row, col)]
 
     def make_plant_(self, name, pos):
@@ -35,6 +35,7 @@ class Spawner:
         permutation = (row, col)
 
         success = False
+        #print(self.occupied_.keys())
         if permutation not in self.occupied_.keys() and row != -1:
             success = True
             sprite = globals()[name](permutation)
@@ -42,28 +43,6 @@ class Spawner:
             self.occupied_[permutation] = sprite
 
         return success
-
-
-    def make_plant(self, name, pos):
-        found, row, col = get_permutation_from_pos(pos)
-        permutation = (row, col)
-        #if name == 'PeaShooter':
-        #    sprite = PeaShooter(permutation)
-        #elif name == 'SunFlower':
-        #    sprite = SunFlower(permutation)
-        #elif name == 'ThornyNut':
-        #    sprite = ThornyNut(permutation)
-        #elif name == 'CherryBomb':
-        #    sprite = CherryBomb(permutation)
-        #elif name == 'Chomper':
-        #    sprite == Chomper(permutation)
-        sprite = globals()[name](permutation)
-        
-        if not occupied_place(occupied=self.occupied, pos=permutation) and row != -1:
-            self.group.add(sprite)
-            self.occupied[permutation] = 1
-            return True
-        return False
 
     def generate(self):
         max_tries = 3

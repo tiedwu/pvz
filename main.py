@@ -160,6 +160,7 @@ class Game:
             for card in self.cards:
                 if card.get_rect().collidepoint(pos):
                     self.plant_taken = card.name
+                    #self.card_selected = True
                     break
 
         else:
@@ -171,7 +172,25 @@ class Game:
                     if self.plants.make_plant_(self.plant_taken, pos):
                         self.seedpacket.seeds -= cost
                         self.plant_taken = None
-        self.card_selected = not self.card_selected
+                self.card_selected = not self.card_selected
+
+    def handle_choice_(self):
+        pos = pygame.mouse.get_pos()
+
+        for card in self.cards:
+            if card.get_rect().collidepoint(pos):
+                self.plant_taken = card.name
+                #self.card_selected = True
+                break
+
+        if self.plant_taken != None:
+            cost = get_plants()[self.plant_taken]['cost']
+            if self.seedpacket.seeds >= cost:
+                if self.plants.make_plant_(self.plant_taken, pos):
+                    self.seedpacket.seeds -= cost
+                    self.plant_taken = None
+                    #self.card_selected = False
+
 
     def loop(self):
         clock = pygame.time.Clock()
@@ -186,7 +205,7 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     
                     if event.button == 1:
-                        self.handle_choice()
+                        self.handle_choice_()
                         #self.card_selected = not self.card_selected
 
                 if event.type == pygame.KEYDOWN:

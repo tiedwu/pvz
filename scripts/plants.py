@@ -93,6 +93,7 @@ class Plant(Entity):
         for projectile in self.projectiles:
             projectile.stop()
 
+# 1
 class PeaShooter(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
@@ -100,7 +101,8 @@ class PeaShooter(Plant):
     def __init__(self, permutation):
         super().__init__(self.NAME, permutation)
         self.shoot_duration = self.SHOOT_DURATION
-       
+
+# 2
 class SunFlower(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
@@ -157,6 +159,7 @@ class SunFlower(Plant):
 
         self._draw_produce(surf)
 
+# 18
 class ThornyNut(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
@@ -164,6 +167,7 @@ class ThornyNut(Plant):
     def __init__(self, permutation):
         super().__init__(self.NAME, permutation)
 
+# 3
 class CherryBomb(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
@@ -173,6 +177,7 @@ class CherryBomb(Plant):
         self.NAME = type(self).__name__
         #super().__init__(self.NAME, permutation)
 
+# 4
 class Chomper(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
@@ -180,6 +185,7 @@ class Chomper(Plant):
         super().__init__(type(self).__name__, permutation)
         self.NAME = type(self).__name__
 
+# 5
 class HypnoShroom(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
@@ -187,6 +193,7 @@ class HypnoShroom(Plant):
         super().__init__(type(self).__name__, permutation)
         self.NAME = type(self).__name__
 
+# 6
 class IceShroom(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
@@ -194,7 +201,88 @@ class IceShroom(Plant):
         super().__init__(type(self).__name__, permutation)
         self.NAME = type(self).__name__
 
+# 7
 class Jalapeno(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 8
+class PotatoMine(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 9
+class PuffShroom(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 10
+class WallNut(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 11
+class RepeaterPea(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 12
+class ScaredyShroom(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 13
+class SnowPea(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 14
+class Spikeweed(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 15
+class Squash(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 16
+class SunShroom(Plant):
+    ANIMATION_DURATION = 1 * 60
+    SHOOT_DURATION = 2 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+# 17
+class ThreepeaShooter(Plant):
     ANIMATION_DURATION = 1 * 60
     SHOOT_DURATION = 2 * 60
     def __init__(self, permutation):
