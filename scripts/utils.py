@@ -97,6 +97,9 @@ def cards_by_map(map):
 def seeds_by_map(map):
     if map == 'map0':
         return 100
+    elif map == 'map1':
+        return 50
+    return 0
 
 def draw_grids(display, mode='game', scroll=0):
     #display.fill(GRASS_COLOR)

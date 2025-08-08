@@ -2,7 +2,7 @@ import pygame
 import random
 
 from scripts.constants import (SCREEN_WIDTH, SCREEN_HEIGHT, FPS, NUMBER_OF_MOWERS, \
-        ENERGY_SPACE, SEED_PACKET_WIDTH, SEED_PACKET_HEIGHT, ROAD_GRID_SIZE)
+        ENERGY_SPACE, SEED_PACKET_WIDTH, SEED_PACKET_HEIGHT, ROAD_GRID_SIZE, MAPS)
 from scripts.spawner import Spawner
 from scripts.mowers import Mower
 from scripts.cards import Generator
@@ -19,36 +19,69 @@ class Game:
         pygame.display.set_caption('Plants VS Zombies')
         self.seedpacket = SeedPacket((ENERGY_SPACE // 2 - SEED_PACKET_WIDTH // 2, \
                 ROAD_GRID_SIZE // 2 - SEED_PACKET_HEIGHT // 2))
-        self._reset('map0')
+        self.map_idx = 0
+        self.mission_completed = False
+        self.init()
+        #self._reset() # initalize game
 
-    def _reset(self, map):
-        self.gameover = False
-        self.map = map
+    def init(self):
         self.zombies = Spawner('zombie')
         self.plants = Spawner('plant')
-        self.mowers = self._create_mowers()
         self.card_generator = Generator()
+        self._reset()
+        self.load_map()
+        
+
+
+    def load_mission(self):
+        #if self.mission_completed:
+        #self.map_idx = min(self.map_idx + 1, len(MAPS) - 1)
+        self.map_idx += 1
+        if self.map_idx < len(MAPS):
+            self.map = MAPS[self.map_idx]
+            self._reset()
+            self.load_map()
+        else:
+            #print('completed')
+            self.mission_completed = True 
+            #self.gameover = True
+
+            
+    def _reset(self):
+        self.gameover = False
+        #self.map = map
+        self.mowers = self._create_mowers()
         # self.cards = []
         self.plant_taken = None
-        self.load_map()
+        #self.load_map()
         #self.cards = self._make_cards()
         self.card_selected = False
-        self.seedpacket.seeds = seeds_by_map(map)
+        self.plants.reset()
+        self.zombies.reset()
+
+
+        self.seedpacket.seeds = seeds_by_map(MAPS[self.map_idx])
 
     def load_map(self):
         self.cards = []
 
-        self.card_generator.load(self.map)
+        self.card_generator.reset()
+        self.card_generator.load(MAPS[self.map_idx])
         self.card_objects = self.card_generator.designate() 
         #print(self.objects)
         self.cards = [x for x in self.card_objects['plants'].values()]
         #print(self.cards)
 
-        self.objects = {}
+        #self.objects = {}
+        for z_pos, card in self.card_objects['zombies'].items():
+            #print(card.name, z_pos)
+            self.zombies.make_zombie_(card.name, z_pos)
+        
 
 
-    def _make_cards(self):
-        return self.card_generator.make_cards_by_map(self.map)
+
+    #def _make_cards(self):
+    #    return self.card_generator.make_cards_by_map(self.map)
 
     def _create_mowers(self):
         mowers = []
@@ -90,11 +123,15 @@ class Game:
             if plant.name in seed_producing_plants():
                 self.seedpacket.seeds += plant.produce()
 
+
     def update(self):
+        if (self.zombies.check_empty()):
+            #self.mission_completed = True
+            self.load_mission()
+
         self.handle_collision()
 
         self.gather_seeds()
-
 
         self.zombies.group.update()
         self.plants.group.update()
@@ -105,7 +142,7 @@ class Game:
                 self.mowers.remove(mower)
             mower.update()
 
-        if self.check_gameover():
+        if self.check_gameover() or self.mission_completed:
             self.gameover = True
 
             # all thing stop moving
@@ -118,6 +155,9 @@ class Game:
         for plant in self.plants.group:
             plant.stop()
 
+        for mower in self.mowers:
+            mower.stop()
+
     def check_gameover(self):
         gameover = False
         for zombie in self.zombies.group:
@@ -126,10 +166,13 @@ class Game:
                 break
         return gameover
 
+    def draw_map(self):
+        draw_grids(self.screen) # draw map
+
+
             
     def draw(self):
-        draw_grids(self.screen)
-
+        self.draw_map()
         self.seedpacket.draw(self.screen)
 
         for card in self.cards:
@@ -148,8 +191,22 @@ class Game:
         if self.gameover:
             self.draw_gameover()
 
+        #if self.mission_completed:
+        #    self.draw_mission_completed()
+
+    
+    def draw_mission_completed(self):
+        font_image = make_font('gameover', 'Missions completed !!!')
+        self.screen.blit(font_image, (SCREEN_WIDTH // 2 - font_image.get_width() // 2, \
+                SCREEN_HEIGHT // 2 - font_image.get_height() // 2))
+
+
     def draw_gameover(self):
-        font_image = make_font('gameover', 'Gameover !!!')
+        if self.mission_completed:
+            font_image = make_font('gameover', 'Missions completed !!!')
+        else:
+            font_image = make_font('gameover', 'Gameover !!!')
+        
         self.screen.blit(font_image, (SCREEN_WIDTH // 2 - font_image.get_width() // 2, \
                 SCREEN_HEIGHT // 2 - font_image.get_height() // 2))
 

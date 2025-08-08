@@ -172,6 +172,7 @@ class Editor:
             else:
                 if over_map_screen(pos):
                     self.card_generator.make_zombie_card_(self.zombie_card_selected, (pos[0] + self.scroll, pos[1]))
+                    self.zombie_card_selected = None
             
             # plant_card
             selected = self._select_card_on_zone(pos)

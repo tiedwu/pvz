@@ -18,11 +18,15 @@ class Generator:
         self.zombies = zombies_by_id()
 
         #self._designate = {'plants': self._reset_plants(), 'zombies': {}}
-        self._designate = {'plants': self._reset_plants(), 'zombies': {}}
+        self.reset()
         
     def _reset_plants(self):
         plants = {}
         return plants
+
+    def reset(self):
+        self._designate = {'plants': self._reset_plants(), 'zombies': {}}
+
 
 
     def designate(self):
@@ -48,17 +52,15 @@ class Generator:
         #insert = False
 
         insert = False
-        for i in range(len(plants.keys())):
-            if plants[i] == None:
+
+        index = -1
+        for i in range(MAX_CARD_AMOUNT):
+            if i not in plants.keys():
                 index = i
-                insert = True
                 break
 
-
-        if insert == False:
-            index = len(plants.keys())
-            if index == MAX_CARD_AMOUNT:
-                return
+        if index == -1:
+            return
 
 
         x = ENERGY_SPACE + index * CARD_WIDTH
@@ -136,7 +138,7 @@ class Generator:
         #self.occupied[index] = 0
 
         if family == 'plants':
-            self._designate['plants'][key] = None
+            del self._designate['plants'][key]
         elif family == 'zombies':
             del self._designate['zombies'][key]
 

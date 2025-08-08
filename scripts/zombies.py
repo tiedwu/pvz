@@ -26,9 +26,11 @@ class ZombieGenerator:
 
         return zombie
 
+
+
 class AbstractZombie(Entity):
-    def __init__(self, permutation):
-        super().__init__(None, permutation, images=get_zombies()[self.NAME]['images'])
+    def __init__(self, name, permutation):
+        super().__init__(None, permutation, images=get_zombies()[name]['images'])
         self.live = True
         self.max_hp = self.hp = 100
         self.hp = 80
@@ -39,7 +41,7 @@ class AbstractZombie(Entity):
         # zombies properties
         self.velocity = self.VEL
         self.animation_duration = self.ANIMATION_DURATION
-        self.name = self.NAME
+        self.name = name
 
     def get_velocity(self):
         return self.velocity
@@ -145,21 +147,69 @@ class AbstractZombie(Entity):
         for projectile in self.projectiles:
             projectile.stop()
 
+#1
 class Zombie(AbstractZombie):
     VEL = [-1, 0]
     ANIMATION_DURATION = 1 * 60
-    NAME = 'Zombie'
+    #NAME = 'Zombie'
+    #NAME = type(self).__name__
     ATTACK_COUNT = 1 * 60
     def __init__(self, permutation):
-        super().__init__(permutation)
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
 
+#2
 class PeaZombie(AbstractZombie):
     VEL = [-1, 0]
     ANIMATION_DURATION = 1 * 60
-    NAME = 'PeaZombie'
+    #NAME = 'PeaZombie'
+    #NAME = type(self).__name__
     SHOOT_DURATION = 2 * 60
     def __init__(self, permutation):
-        super().__init__(permutation)
+        super().__init__(type(self).__name__, permutation)
         self.shoot_duration = self.SHOOT_DURATION
+        self.NAME = type(self).__name__
 
+#3
+class BucketheadZombie(AbstractZombie):
+    VEL = [-1, 0]
+    ANIMATION_DURATION = 1 * 60
+    #NAME = 'Zombie'
+    #NAME = type(self).__name__
+    ATTACK_COUNT = 1 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
 
+#4
+class ConeheadZombie(AbstractZombie):
+    VEL = [-1, 0]
+    ANIMATION_DURATION = 1 * 60
+    #NAME = 'Zombie'
+    #NAME = type(self).__name__
+    ATTACK_COUNT = 1 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+#5
+class FlagZombie(AbstractZombie):
+    VEL = [-1, 0]
+    ANIMATION_DURATION = 1 * 60
+    #NAME = 'Zombie'
+    #NAME = type(self).__name__
+    ATTACK_COUNT = 1 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
+
+#6
+class NewspaperZombie(AbstractZombie):
+    VEL = [-1, 0]
+    ANIMATION_DURATION = 1 * 60
+    #NAME = 'Zombie'
+    #NAME = type(self).__name__
+    ATTACK_COUNT = 1 * 60
+    def __init__(self, permutation):
+        super().__init__(type(self).__name__, permutation)
+        self.NAME = type(self).__name__
